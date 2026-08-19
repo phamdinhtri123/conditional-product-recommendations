@@ -144,7 +144,38 @@ class CRW_Frontend {
 			$product_ids = array_merge( $product_ids, $this->evaluator->get_display_products( $rule ) );
 		}
 
-		return array_values( array_unique( array_map( 'absint', $product_ids ) ) );
+		$product_ids = array_values( array_unique( array_map( 'absint', $product_ids ) ) );
+
+		if ( 'product' === $location ) {
+			$product_ids = array_values( array_diff( $product_ids, $this->get_current_product_exclusion_ids() ) );
+		}
+
+		return $product_ids;
+	}
+
+	/**
+	 * Product IDs that should not appear on the current single product page.
+	 *
+	 * @return array
+	 */
+	private function get_current_product_exclusion_ids() {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return array();
+		}
+
+		$current_product_id = absint( get_the_ID() );
+		$current_product    = wc_get_product( $current_product_id );
+		$exclude_ids        = array_filter( array( $current_product_id ) );
+
+		if ( $current_product && $current_product->is_type( 'variable' ) ) {
+			$exclude_ids = array_merge( $exclude_ids, array_map( 'absint', $current_product->get_children() ) );
+		}
+
+		if ( $current_product && $current_product->is_type( 'variation' ) ) {
+			$exclude_ids[] = absint( $current_product->get_parent_id() );
+		}
+
+		return array_values( array_unique( array_filter( $exclude_ids ) ) );
 	}
 
 	/**
