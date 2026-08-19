@@ -1,6 +1,6 @@
 <?php
 /**
- * GitHub private release updater.
+ * GitHub release updater.
  *
  * @package Conditional_Product_Recommendations
  */
@@ -81,7 +81,7 @@ class CRW_Github_Updater {
 	}
 
 	/**
-	 * Get GitHub token for private repositories.
+	 * Get optional GitHub token. Public repositories do not need this.
 	 *
 	 * @return string
 	 */

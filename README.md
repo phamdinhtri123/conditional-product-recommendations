@@ -9,29 +9,26 @@ Displays conditional WooCommerce product recommendations on product pages, Class
 3. Activate **Conditional Product Recommendations for WooCommerce** in WordPress Admin.
 4. Go to **WooCommerce > Product Recommendations**.
 
-## Private GitHub Updates
+## Public GitHub Updates
 
-This plugin bundles Plugin Update Checker and can update from a private GitHub repository.
+This plugin bundles Plugin Update Checker and can update from a public GitHub repository.
 
 Recommended flow:
 
 ```text
 VSCode
 Git commit + push
-GitHub private repository
+GitHub public repository
 Tag / Release v1.0.3
 WordPress sites see "Version 1.0.3 is available"
 Update now
 ```
 
-Configure each WordPress site in `wp-config.php`:
+Set the repository URL in `conditional-product-recommendations.php`:
 
 ```php
 define( 'CRW_GITHUB_REPOSITORY_URL', 'https://github.com/your-org/conditional-product-recommendations/' );
-define( 'CRW_GITHUB_ACCESS_TOKEN', 'github_pat_xxx' );
 ```
-
-Use a fine-grained GitHub token with read-only access to the private repository contents. Do not commit the token into the plugin repository.
 
 Optional, if you want updates to use a stable branch instead of releases/tags:
 
@@ -45,7 +42,7 @@ For each release:
 2. Commit and push.
 3. Create a Git tag like `v1.0.3`.
 4. Create a GitHub Release from that tag.
-5. WordPress sites with the token configured will detect the update.
+5. WordPress sites will detect the update from the public GitHub release.
 
 ## Create Your First Rule
 
