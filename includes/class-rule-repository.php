@@ -170,7 +170,10 @@ class CRW_Rule_Repository {
 	public function get_default_display_settings() {
 		return array(
 			'heading_text'        => __( "Don't Forget the Essentials", 'conditional-product-recommendations' ),
-			'heading_icon_url'    => '',
+			'heading_icon_url'    => '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+										<path d="M0 0h24v24H0z" fill="none" />
+										<path fill="none" stroke="#2563eb" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M15 18a3 3 0 1 1-6 0m-2.957 0a2.03 2.03 0 0 1-1.718-.95a2.08 2.08 0 0 1-.142-1.972l.545-1.212A13.5 13.5 0 0 0 5.882 9.23l.031-.473A6.2 6.2 0 0 1 7.83 4.666A6.07 6.07 0 0 1 11.998 3a6.07 6.07 0 0 1 4.168 1.666a6.2 6.2 0 0 1 1.917 4.09l.031.474a13.5 13.5 0 0 0 1.154 4.636l.546 1.211a2.08 2.08 0 0 1-.138 1.976a2.03 2.03 0 0 1-1.723.947z" />
+									</svg>',
 			'subtitle'            => __( 'Make sure you have everything you need.', 'conditional-product-recommendations' ),
 			'max_products'        => 6,
 			'layout_mode'         => 'columns',

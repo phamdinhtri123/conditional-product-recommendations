@@ -15,6 +15,10 @@ Conditional Product Recommendations for WooCommerce lets store admins choose pro
 
 == Changelog ==
 
+= 1.0.3 =
+* Edit product card style
+* Fix error when adding products to the cart
+
 = 1.0.2 =
 * Added advanced recommendation layout settings.
 * Added custom heading icon and add button icon support.

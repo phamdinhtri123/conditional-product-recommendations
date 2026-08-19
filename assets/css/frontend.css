@@ -6,10 +6,12 @@ section.crw-recommendations {
 	clear: both;
 	display: block !important;
 	width: 100% !important;
-	margin: 28px 0 !important;
-	padding: 0 !important;
+	margin: 16px 0 !important;
+	padding: 20px !important;
 	color: #111827 !important;
 	font-family: inherit !important;
+	background: #2563eb10;
+	border-radius: 16px;
 }
 
 .crw-recommendations .crw-recommendations__header {
@@ -17,12 +19,12 @@ section.crw-recommendations {
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: 16px;
-	margin: 0 0 18px !important;
+	margin: 0 !important;
 }
 
 .crw-recommendations .crw-recommendations__title-row {
 	display: flex !important;
-	gap: 10px;
+	gap: 12px;
 	align-items: flex-start;
 	min-width: 0;
 }
@@ -30,11 +32,13 @@ section.crw-recommendations {
 .crw-recommendations .crw-recommendations__icon {
 	position: relative;
 	flex: 0 0 auto;
-	width: 22px;
-	height: 22px;
+	width: 24px;
+	height: 24px;
 	margin-top: 2px;
 	border: 2px solid var(--crw-primary);
 	border-radius: 11px 11px 8px 8px;
+	transform-origin: 50% 10%;
+	animation: bell-shake 2.5s ease-in-out infinite;
 }
 
 .crw-recommendations .crw-recommendations__icon img {
@@ -87,7 +91,7 @@ section.crw-recommendations {
 	margin: 0 !important;
 	padding: 0 !important;
 	font-size: 16px !important;
-	font-weight: 800 !important;
+	font-weight: 700 !important;
 	line-height: 1.25 !important;
 	color: #111827 !important;
 }
@@ -117,6 +121,7 @@ section.crw-recommendations {
 	line-height: 1 !important;
 	box-shadow: none !important;
 	text-transform: none !important;
+	text-shadow: none !important;
 	cursor: pointer;
 }
 
@@ -135,8 +140,8 @@ section.crw-recommendations {
 .crw-recommendations .crw-recommendations__grid {
 	display: grid !important;
 	grid-template-columns: repeat(var(--crw-columns-desktop), minmax(0, 1fr)) !important;
-	gap: 12px !important;
-	margin: 0 !important;
+	gap: 16px !important;
+	margin: 20px 0 0 !important;
 	padding: 0 !important;
 	list-style: none !important;
 }
@@ -170,11 +175,10 @@ section.crw-recommendations {
 	display: flex !important;
 	flex-direction: column !important;
 	min-width: 0 !important;
-	min-height: 280px !important;
 	margin: 0 !important;
-	padding: 18px 18px 16px !important;
+	padding: 12px !important;
 	border: 1px solid #e5e7eb !important;
-	border-radius: 12px !important;
+	border-radius: 14px !important;
 	background: #fff !important;
 	box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07) !important;
 }
@@ -184,8 +188,8 @@ section.crw-recommendations {
 	align-items: center;
 	justify-content: center;
 	width: 100% !important;
-	height: 128px !important;
-	margin: 0 0 16px !important;
+	height: 100% !important;
+	margin: 0 0 4px !important;
 	padding: 0 !important;
 	text-decoration: none !important;
 }
@@ -193,9 +197,9 @@ section.crw-recommendations {
 .crw-recommendations .crw-product-card__image {
 	display: block !important;
 	width: 100% !important;
-	max-width: 136px !important;
-	height: 128px !important;
-	object-fit: contain !important;
+	max-width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
 }
 
 .crw-recommendations .crw-product-card__body {
@@ -208,11 +212,16 @@ section.crw-recommendations {
 .crw-recommendations .crw-product-card__name {
 	display: block !important;
 	margin: 0 0 5px !important;
-	color: #111827 !important;
+	color: #111 !important;
 	font-size: 14px !important;
-	font-weight: 800 !important;
+	font-weight: 600 !important;
 	line-height: 1.2 !important;
 	text-decoration: none !important;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .crw-recommendations .crw-product-card__description {
@@ -220,13 +229,18 @@ section.crw-recommendations {
 	color: #6b7280 !important;
 	font-size: 12px !important;
 	line-height: 1.35 !important;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .crw-recommendations .crw-product-card__price {
 	margin-top: auto !important;
 	padding-right: 52px !important;
 	color: #111827 !important;
-	font-size: 15px !important;
+	font-size: 14px !important;
 	font-weight: 800 !important;
 	line-height: 1.2 !important;
 }
@@ -237,28 +251,34 @@ section.crw-recommendations {
 
 .crw-recommendations button.crw-product-card__add {
 	position: absolute;
-	right: 18px;
-	bottom: 16px;
+	right: 12px;
+	bottom: 12px;
 	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
-	width: 42px !important;
-	height: 42px !important;
-	min-width: 42px !important;
-	min-height: 42px !important;
+	width: 36px !important;
+	height: 36px !important;
 	margin: 0 !important;
-	padding: 0 !important;
+	padding: 4px !important;
 	border: 2px solid var(--crw-primary) !important;
 	border-radius: 10px !important;
 	background: #fff !important;
 	color: var(--crw-primary) !important;
-	font-size: 28px !important;
 	font-weight: 400 !important;
 	line-height: 1 !important;
 	cursor: pointer;
 	box-shadow: 0 7px 16px rgba(37, 99, 235, 0.12) !important;
 	text-transform: none !important;
 	transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.crw-recommendations button.crw-product-card__add>span {
+	display: flex;
+	align-items: center;
+	line-height: 1;
+	height: 100%;
+	width: 100%;
+	justify-content: center;
 }
 
 .crw-recommendations button.crw-product-card__add:hover,
@@ -299,33 +319,25 @@ section.crw-recommendations {
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
-	margin: 18px 0 0 !important;
+	margin: 22px 0 0 !important;
 	padding: 0 !important;
-	color: #374151 !important;
+	color: #333 !important;
 	font-size: 13px !important;
 	line-height: 1.4 !important;
 	text-align: center !important;
+	font-weight: 600 !important;
 }
 
 .crw-recommendations .crw-recommendations__note-icon {
 	position: relative;
-	width: 16px;
-	height: 16px;
-	border: 1.5px solid var(--crw-primary);
-	border-radius: 50%;
+	width: 18px;
+	height: 18px;
+}
+.crw-recommendations .crw-recommendations__note-icon svg {
+	width: 100% !important;
+	height: 100% !important;
 }
 
-.crw-recommendations .crw-recommendations__note-icon::after {
-	content: "";
-	position: absolute;
-	left: 4px;
-	top: 3px;
-	width: 5px;
-	height: 8px;
-	border-right: 1.5px solid var(--crw-primary);
-	border-bottom: 1.5px solid var(--crw-primary);
-	transform: rotate(45deg);
-}
 
 .crw-recommendations.is-collapsed .crw-recommendations__grid,
 .crw-recommendations.is-collapsed .crw-recommendations__note {
