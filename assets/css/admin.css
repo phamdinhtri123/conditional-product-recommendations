@@ -1,0 +1,33 @@
+.crw-admin-wrap .crw-rule-form {
+	max-width: 960px;
+}
+
+.crw-product-search {
+	width: 100%;
+	max-width: 720px;
+}
+
+.crw-rule-form .select2-container,
+.crw-rule-form .selectWoo-container {
+	width: 100% !important;
+	max-width: 720px;
+}
+
+.crw-rule-form select.crw-product-search.enhanced {
+	position: absolute !important;
+	left: -9999px !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	opacity: 0 !important;
+}
+
+.crw-location-field label {
+	display: inline-block;
+	margin-right: 18px;
+}
+
+.crw-rules-table td,
+.crw-rules-table th {
+	vertical-align: middle;
+}
