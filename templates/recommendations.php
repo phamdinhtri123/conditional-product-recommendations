@@ -7,19 +7,38 @@
  * @var WC_Product[] $products Products.
  * @var string       $heading Heading.
  * @var string       $location Location.
+ * @var array        $settings Display settings.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$custom_class = ! empty( $settings['custom_css_class'] ) ? sanitize_html_class( $settings['custom_css_class'] ) : 'crw-recommendations';
+$layout_class = 'rows' === $settings['layout_mode'] ? 'crw-recommendations--rows' : 'crw-recommendations--columns';
+$animation_class = ! empty( $settings['enable_animation'] ) ? 'crw-recommendations--animated' : '';
+$button_class = ! empty( $settings['show_add_button'] ) ? 'crw-recommendations--has-add-button' : 'crw-recommendations--no-add-button';
+$section_style = sprintf(
+	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;',
+	esc_attr( $settings['primary_color'] ),
+	absint( $settings['columns_desktop'] ),
+	absint( $settings['columns_tablet'] ),
+	absint( $settings['columns_mobile'] )
+);
 ?>
-<section class="crw-recommendations" data-crw-location="<?php echo esc_attr( $location ); ?>">
+<section class="crw-recommendations <?php echo esc_attr( $custom_class . ' ' . $layout_class . ' ' . $animation_class . ' ' . $button_class ); ?>" style="<?php echo esc_attr( $section_style ); ?>" data-crw-location="<?php echo esc_attr( $location ); ?>">
 	<div class="crw-recommendations__header">
 		<div class="crw-recommendations__title-row">
-			<span class="crw-recommendations__icon" aria-hidden="true"></span>
+			<span class="crw-recommendations__icon <?php echo ! empty( $settings['heading_icon_url'] ) ? 'crw-recommendations__icon--custom' : ''; ?>" aria-hidden="true">
+				<?php if ( ! empty( $settings['heading_icon_url'] ) ) : ?>
+					<img src="<?php echo esc_url( $settings['heading_icon_url'] ); ?>" alt="">
+				<?php endif; ?>
+			</span>
 			<div class="crw-recommendations__copy">
 				<h2 class="crw-recommendations__heading"><?php echo esc_html( $heading ); ?></h2>
-				<p class="crw-recommendations__subtitle"><?php echo esc_html__( 'Make sure you have everything you need.', 'conditional-product-recommendations' ); ?></p>
+				<?php if ( ! empty( $settings['subtitle'] ) ) : ?>
+					<p class="crw-recommendations__subtitle"><?php echo esc_html( $settings['subtitle'] ); ?></p>
+				<?php endif; ?>
 			</div>
 		</div>
 		<button class="crw-recommendations__hide" type="button" aria-expanded="true">
@@ -40,11 +59,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php if ( $product->get_short_description() ) : ?>
 						<div class="crw-product-card__description"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $product->get_short_description() ), 8 ) ); ?></div>
 					<?php endif; ?>
-					<div class="crw-product-card__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+					<?php if ( ! empty( $settings['show_price'] ) ) : ?>
+						<div class="crw-product-card__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
+					<?php endif; ?>
 				</div>
-				<button class="crw-product-card__add" type="button" data-product-id="<?php echo esc_attr( $product->get_id() ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: product name */ __( 'Add %s to cart', 'conditional-product-recommendations' ), $product->get_name() ) ); ?>">
-					<span aria-hidden="true">+</span>
-				</button>
+				<?php if ( ! empty( $settings['show_add_button'] ) ) : ?>
+					<button class="crw-product-card__add crw-product-card__add--<?php echo esc_attr( $settings['add_button_style'] ); ?>" type="button" data-product-id="<?php echo esc_attr( $product->get_id() ); ?>" <?php disabled( ! $product->is_in_stock() ); ?> aria-label="<?php echo esc_attr( sprintf( /* translators: %s: product name */ __( 'Add %s to cart', 'conditional-product-recommendations' ), $product->get_name() ) ); ?>">
+						<?php if ( 'custom_icon' === $settings['add_button_style'] && ! empty( $settings['add_button_icon_url'] ) ) : ?>
+							<img src="<?php echo esc_url( $settings['add_button_icon_url'] ); ?>" alt="">
+						<?php elseif ( 'text' === $settings['add_button_style'] ) : ?>
+							<span><?php echo esc_html__( 'Add', 'conditional-product-recommendations' ); ?></span>
+						<?php else : ?>
+							<span aria-hidden="true">+</span>
+						<?php endif; ?>
+					</button>
+				<?php endif; ?>
 			</article>
 		<?php endforeach; ?>
 	</div>

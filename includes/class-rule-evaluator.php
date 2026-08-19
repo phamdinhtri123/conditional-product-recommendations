@@ -65,7 +65,7 @@ class CRW_Rule_Evaluator {
 		foreach ( $product_ids as $product_id ) {
 			$product = wc_get_product( $product_id );
 
-			if ( $this->is_valid_recommendation_product( $product ) ) {
+			if ( $this->is_valid_recommendation_product( $product, ! empty( $rule['display_settings']['show_out_of_stock'] ) ) ) {
 				$valid_ids[] = $product_id;
 			}
 		}
@@ -87,9 +87,10 @@ class CRW_Rule_Evaluator {
 	 * Validate product visibility for recommendations.
 	 *
 	 * @param WC_Product|false|null $product Product.
+	 * @param bool                  $show_out_of_stock Whether out-of-stock products can be shown.
 	 * @return bool
 	 */
-	private function is_valid_recommendation_product( $product ) {
+	private function is_valid_recommendation_product( $product, $show_out_of_stock = false ) {
 		if ( ! $product instanceof WC_Product ) {
 			return false;
 		}
@@ -98,7 +99,11 @@ class CRW_Rule_Evaluator {
 			return false;
 		}
 
-		if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+		if ( ! $product->is_purchasable() ) {
+			return false;
+		}
+
+		if ( ! $show_out_of_stock && ! $product->is_in_stock() ) {
 			return false;
 		}
 

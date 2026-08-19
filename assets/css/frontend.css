@@ -1,4 +1,8 @@
 section.crw-recommendations {
+	--crw-primary: #2563eb;
+	--crw-columns-desktop: 3;
+	--crw-columns-tablet: 2;
+	--crw-columns-mobile: 1;
 	clear: both;
 	display: block !important;
 	width: 100% !important;
@@ -29,8 +33,25 @@ section.crw-recommendations {
 	width: 22px;
 	height: 22px;
 	margin-top: 2px;
-	border: 2px solid #2563eb;
+	border: 2px solid var(--crw-primary);
 	border-radius: 11px 11px 8px 8px;
+}
+
+.crw-recommendations .crw-recommendations__icon img {
+	display: block !important;
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain !important;
+}
+
+.crw-recommendations .crw-recommendations__icon--custom {
+	border: 0;
+	border-radius: 0;
+}
+
+.crw-recommendations .crw-recommendations__icon--custom::before,
+.crw-recommendations .crw-recommendations__icon--custom::after {
+	display: none;
 }
 
 .crw-recommendations .crw-recommendations__icon::before {
@@ -40,7 +61,7 @@ section.crw-recommendations {
 	top: -4px;
 	width: 6px;
 	height: 4px;
-	border: 2px solid #2563eb;
+	border: 2px solid var(--crw-primary);
 	border-bottom: 0;
 	border-radius: 8px 8px 0 0;
 	transform: translateX(-50%);
@@ -54,7 +75,7 @@ section.crw-recommendations {
 	width: 8px;
 	height: 2px;
 	border-radius: 999px;
-	background: #2563eb;
+	background: var(--crw-primary);
 	transform: translateX(-50%);
 }
 
@@ -90,7 +111,7 @@ section.crw-recommendations {
 	border: 0 !important;
 	border-radius: 0 !important;
 	background: transparent !important;
-	color: #2563eb !important;
+	color: var(--crw-primary) !important;
 	font-size: 12px !important;
 	font-weight: 700 !important;
 	line-height: 1 !important;
@@ -113,11 +134,35 @@ section.crw-recommendations {
 
 .crw-recommendations .crw-recommendations__grid {
 	display: grid !important;
-	grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	grid-template-columns: repeat(var(--crw-columns-desktop), minmax(0, 1fr)) !important;
 	gap: 12px !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	list-style: none !important;
+}
+
+.crw-recommendations.crw-recommendations--rows .crw-recommendations__grid {
+	grid-template-columns: 1fr !important;
+}
+
+.crw-recommendations.crw-recommendations--rows .crw-product-card {
+	display: grid !important;
+	grid-template-columns: 96px minmax(0, 1fr) auto !important;
+	align-items: center !important;
+	min-height: 132px !important;
+}
+
+.crw-recommendations.crw-recommendations--rows .crw-product-card__image-link {
+	height: 96px !important;
+	margin: 0 !important;
+}
+
+.crw-recommendations.crw-recommendations--rows .crw-product-card__image {
+	height: 96px !important;
+}
+
+.crw-recommendations.crw-recommendations--rows .crw-product-card__add {
+	position: static !important;
 }
 
 .crw-recommendations .crw-product-card {
@@ -186,6 +231,10 @@ section.crw-recommendations {
 	line-height: 1.2 !important;
 }
 
+.crw-recommendations.crw-recommendations--no-add-button .crw-product-card__price {
+	padding-right: 0 !important;
+}
+
 .crw-recommendations button.crw-product-card__add {
 	position: absolute;
 	right: 18px;
@@ -199,10 +248,10 @@ section.crw-recommendations {
 	min-height: 42px !important;
 	margin: 0 !important;
 	padding: 0 !important;
-	border: 2px solid #2563eb !important;
+	border: 2px solid var(--crw-primary) !important;
 	border-radius: 10px !important;
 	background: #fff !important;
-	color: #2563eb !important;
+	color: var(--crw-primary) !important;
 	font-size: 28px !important;
 	font-weight: 400 !important;
 	line-height: 1 !important;
@@ -214,9 +263,24 @@ section.crw-recommendations {
 
 .crw-recommendations button.crw-product-card__add:hover,
 .crw-recommendations button.crw-product-card__add:focus {
-	background: #2563eb !important;
+	background: var(--crw-primary) !important;
 	color: #fff !important;
 	transform: translateY(-1px);
+}
+
+.crw-recommendations button.crw-product-card__add--text {
+	width: auto !important;
+	min-width: 72px !important;
+	padding: 0 14px !important;
+	font-size: 13px !important;
+	font-weight: 800 !important;
+}
+
+.crw-recommendations button.crw-product-card__add--custom_icon img {
+	display: block !important;
+	width: 22px !important;
+	height: 22px !important;
+	object-fit: contain !important;
 }
 
 .crw-recommendations button.crw-product-card__add:disabled {
@@ -247,7 +311,7 @@ section.crw-recommendations {
 	position: relative;
 	width: 16px;
 	height: 16px;
-	border: 1.5px solid #2563eb;
+	border: 1.5px solid var(--crw-primary);
 	border-radius: 50%;
 }
 
@@ -258,8 +322,8 @@ section.crw-recommendations {
 	top: 3px;
 	width: 5px;
 	height: 8px;
-	border-right: 1.5px solid #2563eb;
-	border-bottom: 1.5px solid #2563eb;
+	border-right: 1.5px solid var(--crw-primary);
+	border-bottom: 1.5px solid var(--crw-primary);
 	transform: rotate(45deg);
 }
 
@@ -270,7 +334,7 @@ section.crw-recommendations {
 
 @media (max-width: 760px) {
 	.crw-recommendations .crw-recommendations__grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+		grid-template-columns: repeat(var(--crw-columns-tablet), minmax(0, 1fr)) !important;
 	}
 }
 
@@ -280,10 +344,20 @@ section.crw-recommendations {
 	}
 
 	.crw-recommendations .crw-recommendations__grid {
-		grid-template-columns: 1fr !important;
+		grid-template-columns: repeat(var(--crw-columns-mobile), minmax(0, 1fr)) !important;
 	}
 
 	.crw-recommendations .crw-product-card {
 		min-height: 250px !important;
+	}
+
+	.crw-recommendations.crw-recommendations--rows .crw-product-card {
+		grid-template-columns: 72px minmax(0, 1fr) auto !important;
+		min-height: 110px !important;
+	}
+
+	.crw-recommendations.crw-recommendations--rows .crw-product-card__image-link,
+	.crw-recommendations.crw-recommendations--rows .crw-product-card__image {
+		height: 72px !important;
 	}
 }

@@ -68,10 +68,12 @@ class CRW_Admin {
 		}
 
 		wp_enqueue_style( 'woocommerce_admin_styles' );
+		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_style( 'crw-admin', CRW_PLUGIN_URL . 'assets/css/admin.css', array(), CRW_VERSION );
+		wp_enqueue_media();
 		wp_enqueue_script( 'selectWoo' );
 		wp_enqueue_script( 'wc-enhanced-select' );
-		wp_enqueue_script( 'crw-admin', CRW_PLUGIN_URL . 'assets/js/admin.js', array( 'jquery', 'selectWoo', 'wc-enhanced-select' ), CRW_VERSION, true );
+		wp_enqueue_script( 'crw-admin', CRW_PLUGIN_URL . 'assets/js/admin.js', array( 'jquery', 'selectWoo', 'wc-enhanced-select', 'wp-color-picker' ), CRW_VERSION, true );
 	}
 
 	/**
@@ -257,6 +259,7 @@ class CRW_Admin {
 				'enabled'            => true,
 				'display_products'   => array(),
 				'display_locations'  => array( 'product', 'cart', 'checkout' ),
+				'display_settings'   => $this->repository->get_default_display_settings(),
 			)
 		);
 
@@ -286,6 +289,8 @@ class CRW_Admin {
 		echo '</td></tr>';
 
 		echo '</tbody></table>';
+
+		$this->render_advanced_options( $rule['display_settings'] );
 
 		submit_button( __( 'Save Rule', 'conditional-product-recommendations' ) );
 		echo '<a class="button" href="' . esc_url( add_query_arg( array( 'page' => 'crw-product-recommendations' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Cancel', 'conditional-product-recommendations' ) . '</a>';
@@ -324,5 +329,190 @@ class CRW_Admin {
 	 */
 	private function render_location_checkbox( $value, $label, array $selected ) {
 		echo '<label><input type="checkbox" name="display_locations[]" value="' . esc_attr( $value ) . '" ' . checked( in_array( $value, $selected, true ), true, false ) . '> ' . esc_html( $label ) . '</label>';
+	}
+
+	/**
+	 * Render advanced display options.
+	 *
+	 * @param array $settings Display settings.
+	 * @return void
+	 */
+	private function render_advanced_options( array $settings ) {
+		$settings = wp_parse_args( $settings, $this->repository->get_default_display_settings() );
+
+		echo '<h2 class="crw-section-heading">' . esc_html__( 'Advanced Options', 'conditional-product-recommendations' ) . '</h2>';
+		echo '<table class="form-table crw-advanced-options" role="presentation"><tbody>';
+
+		$this->render_text_field( 'heading_text', __( 'Heading Text', 'conditional-product-recommendations' ), $settings['heading_text'] );
+		$this->render_media_field( 'heading_icon_url', __( 'Heading Icon', 'conditional-product-recommendations' ), $settings['heading_icon_url'] );
+		$this->render_text_field( 'subtitle', __( 'Subtitle / Description', 'conditional-product-recommendations' ), $settings['subtitle'] );
+		$this->render_number_field( 'max_products', __( 'Max Products to Show', 'conditional-product-recommendations' ), $settings['max_products'], 1, 24 );
+
+		$this->render_select_field(
+			'layout_mode',
+			__( 'Item Layout', 'conditional-product-recommendations' ),
+			$settings['layout_mode'],
+			array(
+				'columns' => __( 'Columns / Grid', 'conditional-product-recommendations' ),
+				'rows'    => __( 'Each item on one row', 'conditional-product-recommendations' ),
+			)
+		);
+
+		$this->render_column_select( 'columns_desktop', __( 'Columns (Desktop)', 'conditional-product-recommendations' ), $settings['columns_desktop'] );
+		$this->render_column_select( 'columns_tablet', __( 'Columns (Tablet)', 'conditional-product-recommendations' ), $settings['columns_tablet'] );
+		$this->render_column_select( 'columns_mobile', __( 'Columns (Mobile)', 'conditional-product-recommendations' ), $settings['columns_mobile'] );
+		$this->render_toggle_field( 'show_out_of_stock', __( 'Show Out of Stock', 'conditional-product-recommendations' ), $settings['show_out_of_stock'] );
+		$this->render_toggle_field( 'show_price', __( 'Show Price', 'conditional-product-recommendations' ), $settings['show_price'] );
+		$this->render_toggle_field( 'show_add_button', __( 'Show Add Button', 'conditional-product-recommendations' ), $settings['show_add_button'] );
+
+		$this->render_select_field(
+			'add_button_style',
+			__( 'Add Button Style', 'conditional-product-recommendations' ),
+			$settings['add_button_style'],
+			array(
+				'icon_plus'   => __( 'Icon (Plus)', 'conditional-product-recommendations' ),
+				'text'        => __( 'Text Button', 'conditional-product-recommendations' ),
+				'custom_icon' => __( 'Custom Image / SVG', 'conditional-product-recommendations' ),
+			)
+		);
+
+		$this->render_media_field( 'add_button_icon_url', __( 'Add Button Icon', 'conditional-product-recommendations' ), $settings['add_button_icon_url'] );
+
+		$this->render_select_field(
+			'product_order_by',
+			__( 'Product Order By', 'conditional-product-recommendations' ),
+			$settings['product_order_by'],
+			array(
+				'default'    => __( 'Default', 'conditional-product-recommendations' ),
+				'name_asc'   => __( 'Name A-Z', 'conditional-product-recommendations' ),
+				'price_asc'  => __( 'Price: Low to High', 'conditional-product-recommendations' ),
+				'price_desc' => __( 'Price: High to Low', 'conditional-product-recommendations' ),
+				'random'     => __( 'Random', 'conditional-product-recommendations' ),
+			)
+		);
+
+		$this->render_text_field( 'custom_css_class', __( 'Custom CSS Class', 'conditional-product-recommendations' ), $settings['custom_css_class'] );
+		$this->render_color_field( 'primary_color', __( 'Primary Color', 'conditional-product-recommendations' ), $settings['primary_color'] );
+		$this->render_toggle_field( 'enable_animation', __( 'Enable Animation', 'conditional-product-recommendations' ), $settings['enable_animation'] );
+
+		echo '</tbody></table>';
+	}
+
+	/**
+	 * Render text field.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param string $value Value.
+	 * @return void
+	 */
+	private function render_text_field( $key, $label, $value ) {
+		echo '<tr><th scope="row"><label for="crw-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<input id="crw-' . esc_attr( $key ) . '" class="regular-text" type="text" name="display_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '">';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render color field.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param string $value Value.
+	 * @return void
+	 */
+	private function render_color_field( $key, $label, $value ) {
+		echo '<tr><th scope="row"><label for="crw-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<input id="crw-' . esc_attr( $key ) . '" class="crw-color-field" type="text" name="display_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '">';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render media URL picker.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param string $value Value.
+	 * @return void
+	 */
+	private function render_media_field( $key, $label, $value ) {
+		echo '<tr><th scope="row"><label for="crw-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<div class="crw-media-field">';
+		echo '<input id="crw-' . esc_attr( $key ) . '" class="regular-text crw-media-url" type="url" name="display_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '" placeholder="https://">';
+		echo '<button type="button" class="button crw-media-upload">' . esc_html__( 'Upload / Select', 'conditional-product-recommendations' ) . '</button>';
+		echo '<button type="button" class="button crw-media-clear">' . esc_html__( 'Clear', 'conditional-product-recommendations' ) . '</button>';
+		echo '</div>';
+		echo '<p class="description">' . esc_html__( 'Use an image URL from the media library. SVG can be used if your WordPress site allows SVG uploads.', 'conditional-product-recommendations' ) . '</p>';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render number field.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param int    $value Value.
+	 * @param int    $min Minimum.
+	 * @param int    $max Maximum.
+	 * @return void
+	 */
+	private function render_number_field( $key, $label, $value, $min, $max ) {
+		echo '<tr><th scope="row"><label for="crw-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<input id="crw-' . esc_attr( $key ) . '" class="small-text" type="number" min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '" name="display_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '">';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render column select.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param int    $value Value.
+	 * @return void
+	 */
+	private function render_column_select( $key, $label, $value ) {
+		$options = array();
+		for ( $i = 1; $i <= 6; $i++ ) {
+			$options[ (string) $i ] = sprintf(
+				/* translators: %d: columns */
+				_n( '%d Column', '%d Columns', $i, 'conditional-product-recommendations' ),
+				$i
+			);
+		}
+
+		$this->render_select_field( $key, $label, (string) $value, $options );
+	}
+
+	/**
+	 * Render select field.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param string $value Value.
+	 * @param array  $options Options.
+	 * @return void
+	 */
+	private function render_select_field( $key, $label, $value, array $options ) {
+		echo '<tr><th scope="row"><label for="crw-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<select id="crw-' . esc_attr( $key ) . '" name="display_settings[' . esc_attr( $key ) . ']">';
+		foreach ( $options as $option_value => $option_label ) {
+			echo '<option value="' . esc_attr( $option_value ) . '" ' . selected( (string) $value, (string) $option_value, false ) . '>' . esc_html( $option_label ) . '</option>';
+		}
+		echo '</select>';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render toggle field.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Label.
+	 * @param bool   $checked Checked.
+	 * @return void
+	 */
+	private function render_toggle_field( $key, $label, $checked ) {
+		echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>';
+		echo '<input type="hidden" name="display_settings[' . esc_attr( $key ) . ']" value="0">';
+		echo '<label class="crw-toggle"><input type="checkbox" name="display_settings[' . esc_attr( $key ) . ']" value="1" ' . checked( $checked, true, false ) . '><span></span></label>';
+		echo '</td></tr>';
 	}
 }

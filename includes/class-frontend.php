@@ -103,7 +103,9 @@ class CRW_Frontend {
 	 * @return void
 	 */
 	public function render_recommendations( $location ) {
-		$product_ids = $this->get_recommendation_product_ids( $location );
+		$context     = $this->get_recommendation_context( $location );
+		$product_ids = $context['product_ids'];
+		$settings    = $context['settings'];
 
 		if ( empty( $product_ids ) ) {
 			return;
@@ -121,7 +123,7 @@ class CRW_Frontend {
 			return;
 		}
 
-		$heading = apply_filters( 'crw_recommendations_heading', __( "Don't Forget the Essentials", 'conditional-product-recommendations' ), $location );
+		$heading = apply_filters( 'crw_recommendations_heading', $settings['heading_text'], $location );
 
 		include CRW_PLUGIN_DIR . 'templates/recommendations.php';
 	}
@@ -132,16 +134,27 @@ class CRW_Frontend {
 	 * @param string $location Location.
 	 * @return array
 	 */
-	private function get_recommendation_product_ids( $location ) {
+	private function get_recommendation_context( $location ) {
 		$rules       = $this->repository->get_rules( true );
 		$product_ids = array();
+		$settings    = $this->repository->get_default_display_settings();
 
 		foreach ( $rules as $rule ) {
 			if ( ! $this->evaluator->should_display_rule( $rule, $location ) ) {
 				continue;
 			}
 
-			$product_ids = array_merge( $product_ids, $this->evaluator->get_display_products( $rule ) );
+			$rule_product_ids = $this->evaluator->get_display_products( $rule );
+
+			if ( empty( $rule_product_ids ) ) {
+				continue;
+			}
+
+			if ( empty( $product_ids ) && ! empty( $rule['display_settings'] ) ) {
+				$settings = $rule['display_settings'];
+			}
+
+			$product_ids = array_merge( $product_ids, $rule_product_ids );
 		}
 
 		$product_ids = array_values( array_unique( array_map( 'absint', $product_ids ) ) );
@@ -149,6 +162,57 @@ class CRW_Frontend {
 		if ( 'product' === $location ) {
 			$product_ids = array_values( array_diff( $product_ids, $this->get_current_product_exclusion_ids() ) );
 		}
+
+		$product_ids = $this->sort_product_ids( $product_ids, $settings['product_order_by'] );
+		$product_ids = array_slice( $product_ids, 0, absint( $settings['max_products'] ) );
+
+		return array(
+			'product_ids' => $product_ids,
+			'settings'    => $settings,
+		);
+	}
+
+	/**
+	 * Sort products by selected display option.
+	 *
+	 * @param array  $product_ids Product IDs.
+	 * @param string $order_by Order by option.
+	 * @return array
+	 */
+	private function sort_product_ids( array $product_ids, $order_by ) {
+		if ( 'random' === $order_by ) {
+			shuffle( $product_ids );
+			return $product_ids;
+		}
+
+		if ( ! in_array( $order_by, array( 'name_asc', 'price_asc', 'price_desc' ), true ) ) {
+			return $product_ids;
+		}
+
+		usort(
+			$product_ids,
+			function ( $a, $b ) use ( $order_by ) {
+				$product_a = wc_get_product( $a );
+				$product_b = wc_get_product( $b );
+
+				if ( ! $product_a || ! $product_b ) {
+					return 0;
+				}
+
+				if ( 'name_asc' === $order_by ) {
+					return strcasecmp( $product_a->get_name(), $product_b->get_name() );
+				}
+
+				$price_a = (float) $product_a->get_price();
+				$price_b = (float) $product_b->get_price();
+
+				if ( 'price_desc' === $order_by ) {
+					return $price_b <=> $price_a;
+				}
+
+				return $price_a <=> $price_b;
+			}
+		);
 
 		return $product_ids;
 	}
