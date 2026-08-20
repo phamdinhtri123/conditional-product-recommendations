@@ -68,6 +68,70 @@
 		return !!document.querySelector('.wp-block-woocommerce-cart, .wc-block-cart');
 	}
 
+	function getActiveLayout(section) {
+		var width = window.innerWidth || document.documentElement.clientWidth;
+		var breakpoint = width <= 520 ? 'mobile' : (width <= 760 ? 'tablet' : 'desktop');
+		var modes = ['slider', 'rows', 'columns'];
+		var index;
+
+		for (index = 0; index < modes.length; index++) {
+			if (section.classList.contains('crw-recommendations--' + breakpoint + '-' + modes[index])) {
+				return modes[index];
+			}
+		}
+
+		return 'columns';
+	}
+
+	function initRecommendationSlider(section) {
+		var slider = section.querySelector('.crw-recommendations__slider');
+
+		if (!slider || !window.Swiper) {
+			return;
+		}
+
+		if (getActiveLayout(section) !== 'slider') {
+			if (section.crwSwiper) {
+				section.crwSwiper.destroy(true, true);
+				section.crwSwiper = null;
+			}
+			return;
+		}
+
+		if (section.crwSwiper) {
+			section.crwSwiper.update();
+			return;
+		}
+
+		section.crwSwiper = new window.Swiper(slider, {
+			slidesPerView: 'auto',
+			spaceBetween: 16,
+			watchOverflow: true,
+			grabCursor: true,
+			pagination: {
+				el: section.querySelector('.crw-recommendations__slider-pagination'),
+				clickable: true
+			},
+			navigation: {
+				prevEl: section.querySelector('.crw-recommendations__slider-button--prev'),
+				nextEl: section.querySelector('.crw-recommendations__slider-button--next')
+			}
+		});
+	}
+
+	function initRecommendationSliders() {
+		document.querySelectorAll('.crw-recommendations--has-slider').forEach(initRecommendationSlider);
+	}
+
+	function debounce(callback, delay) {
+		var timer;
+
+		return function () {
+			window.clearTimeout(timer);
+			timer = window.setTimeout(callback, delay);
+		};
+	}
+
 	function removeCard(button) {
 		var card = button.closest('.crw-product-card');
 		var section = button.closest('.crw-recommendations');
@@ -83,6 +147,8 @@
 
 			if (!section.querySelector('.crw-product-card')) {
 				section.remove();
+			} else if (section.crwSwiper) {
+				section.crwSwiper.update();
 			}
 		}, 190);
 	}
@@ -172,4 +238,8 @@
 		event.preventDefault();
 		addToCart(button);
 	});
+
+	document.addEventListener('DOMContentLoaded', initRecommendationSliders);
+	window.addEventListener('load', initRecommendationSliders);
+	window.addEventListener('resize', debounce(initRecommendationSliders, 160));
 })();

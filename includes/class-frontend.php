@@ -50,6 +50,7 @@ class CRW_Frontend {
 		add_action( 'woocommerce_cart_collaterals', array( $this, 'render_cart_recommendations' ), 5 );
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'render_checkout_recommendations' ) );
 		add_filter( 'render_block', array( $this, 'append_block_recommendations' ), 10, 2 );
+		add_filter( 'the_content', array( $this, 'append_cart_content_recommendations' ), 20 );
 	}
 
 	/**
@@ -62,8 +63,10 @@ class CRW_Frontend {
 			return;
 		}
 
-		wp_enqueue_style( 'crw-frontend', CRW_PLUGIN_URL . 'assets/css/frontend.css', array(), CRW_VERSION );
-		wp_enqueue_script( 'crw-frontend', CRW_PLUGIN_URL . 'assets/js/frontend.js', array(), CRW_VERSION, true );
+		wp_enqueue_style( 'crw-swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', array(), '11' );
+		wp_enqueue_style( 'crw-frontend', CRW_PLUGIN_URL . 'assets/css/frontend.css', array( 'crw-swiper' ), CRW_VERSION );
+		wp_enqueue_script( 'crw-swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11', true );
+		wp_enqueue_script( 'crw-frontend', CRW_PLUGIN_URL . 'assets/js/frontend.js', array( 'crw-swiper' ), CRW_VERSION, true );
 		wp_localize_script(
 			'crw-frontend',
 			'crwRecommendations',
@@ -104,6 +107,26 @@ class CRW_Frontend {
 	 */
 	public function render_checkout_recommendations() {
 		$this->render_recommendations( 'checkout' );
+	}
+
+	/**
+	 * Fallback render for Cart Block pages where classic cart hooks do not run.
+	 *
+	 * @param string $content Page content.
+	 * @return string
+	 */
+	public function append_cart_content_recommendations( $content ) {
+		if (
+			is_admin()
+			|| ! function_exists( 'is_cart' )
+			|| ! is_cart()
+			|| ! in_the_loop()
+			|| ! is_main_query()
+		) {
+			return $content;
+		}
+
+		return $content . $this->get_recommendations_html( 'cart' );
 	}
 
 	/**

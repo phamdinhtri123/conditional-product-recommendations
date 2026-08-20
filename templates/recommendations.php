@@ -23,16 +23,18 @@ $mobile_layout_mode = ! empty($settings[$location . '_mobile_layout_mode']) ? $s
 $columns_desktop = ! empty($settings[$location . '_columns_desktop']) ? $settings[$location . '_columns_desktop'] : $settings['columns_desktop'];
 $columns_tablet = ! empty($settings[$location . '_columns_tablet']) ? $settings[$location . '_columns_tablet'] : $settings['columns_tablet'];
 $columns_mobile = ! empty($settings[$location . '_columns_mobile']) ? $settings[$location . '_columns_mobile'] : $settings['columns_mobile'];
-$slider_desktop_basis = absint($columns_desktop) <= 1 ? 'calc(100% - 42px)' : (100 / max(1, absint($columns_desktop))) . '%';
-$slider_tablet_basis = absint($columns_tablet) <= 1 ? 'calc(100% - 36px)' : (100 / max(1, absint($columns_tablet))) . '%';
-$slider_mobile_basis = absint($columns_mobile) <= 1 ? 'calc(100% - 32px)' : (100 / max(1, absint($columns_mobile))) . '%';
+$slider_desktop_basis = 'calc((100% - 42px) / ' . max(1, absint($columns_desktop)) . ')';
+$slider_tablet_basis = 'calc((100% - 36px) / ' . max(1, absint($columns_tablet)) . ')';
+$slider_mobile_basis = 'calc((100% - 32px) / ' . max(1, absint($columns_mobile)) . ')';
+$has_slider = in_array('slider', array($desktop_layout_mode, $tablet_layout_mode, $mobile_layout_mode), true);
 $desktop_layout_class = 'crw-recommendations--desktop-' . sanitize_html_class($desktop_layout_mode);
 $tablet_layout_class = 'crw-recommendations--tablet-' . sanitize_html_class($tablet_layout_mode);
 $mobile_layout_class = 'crw-recommendations--mobile-' . sanitize_html_class($mobile_layout_mode);
 $location_class = 'crw-recommendations--' . sanitize_html_class($location);
 $animation_class = ! empty($settings['enable_animation']) ? 'crw-recommendations--animated' : '';
 $button_class = ! empty($settings['show_add_button']) ? 'crw-recommendations--has-add-button' : 'crw-recommendations--no-add-button';
-$section_classes = array_merge(array('crw-recommendations', $location_class, $desktop_layout_class, $tablet_layout_class, $mobile_layout_class, $animation_class, $button_class), $custom_classes);
+$slider_class = $has_slider ? 'crw-recommendations--has-slider' : '';
+$section_classes = array_merge(array('crw-recommendations', $location_class, $desktop_layout_class, $tablet_layout_class, $mobile_layout_class, $animation_class, $button_class, $slider_class), $custom_classes);
 $section_classes = array_filter(array_unique($section_classes));
 $section_style = sprintf(
 	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;',
@@ -65,7 +67,10 @@ $section_style = sprintf(
 			<span class="crw-recommendations__chevron" aria-hidden="true"></span>
 		</button>
 	</div>
-	<div class="crw-recommendations__grid">
+	<?php if ($has_slider) : ?>
+		<div class="crw-recommendations__slider swiper">
+	<?php endif; ?>
+	<div class="crw-recommendations__grid <?php echo $has_slider ? 'swiper-wrapper' : ''; ?>">
 		<?php foreach ($products as $product) : ?>
 			<?php
 			$ajax_product_id = $product->get_id();
@@ -107,7 +112,7 @@ $section_style = sprintf(
 					$product->get_name()
 				);
 			?>
-			<article class="crw-product-card" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
+			<article class="crw-product-card <?php echo $has_slider ? 'swiper-slide' : ''; ?>" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
 				<a class="crw-product-card__image-link" href="<?php echo esc_url(get_permalink($product->get_id())); ?>">
 					<?php echo wp_kses_post($product->get_image('woocommerce_thumbnail', array('class' => 'crw-product-card__image'))); ?>
 				</a>
@@ -141,6 +146,12 @@ $section_style = sprintf(
 			</article>
 		<?php endforeach; ?>
 	</div>
+	<?php if ($has_slider) : ?>
+			<div class="crw-recommendations__slider-pagination swiper-pagination"></div>
+			<button class="crw-recommendations__slider-button crw-recommendations__slider-button--prev swiper-button-prev" type="button" aria-label="<?php echo esc_attr__('Previous products', 'conditional-product-recommendations'); ?>"></button>
+			<button class="crw-recommendations__slider-button crw-recommendations__slider-button--next swiper-button-next" type="button" aria-label="<?php echo esc_attr__('Next products', 'conditional-product-recommendations'); ?>"></button>
+		</div>
+	<?php endif; ?>
 	<p class="crw-recommendations__note">
 		<span class="crw-recommendations__note-icon" aria-hidden="true">
 			<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
