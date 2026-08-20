@@ -118,7 +118,7 @@
 
 		section.crwSwiper = new window.Swiper(slider, {
 			slidesPerView: 'auto',
-			spaceBetween: 0,
+			spaceBetween: 12,
 			watchOverflow: true,
 			grabCursor: true,
 			pagination: {

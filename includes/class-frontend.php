@@ -46,8 +46,6 @@ class CRW_Frontend {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'woocommerce_after_add_to_cart_form', array( $this, 'render_product_recommendations' ) );
-		add_action( 'woocommerce_after_cart_table', array( $this, 'render_cart_recommendations' ) );
-		add_action( 'woocommerce_cart_collaterals', array( $this, 'render_cart_recommendations' ), 5 );
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'render_checkout_recommendations' ) );
 		add_filter( 'render_block', array( $this, 'append_block_recommendations' ), 10, 2 );
 		add_filter( 'the_content', array( $this, 'append_cart_content_recommendations' ), 20 );

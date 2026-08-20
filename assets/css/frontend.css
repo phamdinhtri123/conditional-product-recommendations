@@ -232,7 +232,6 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 .crw-recommendations .crw-recommendations__slider {
 	position: relative;
-	margin-top: 20px;
 }
 
 .crw-recommendations.crw-recommendations--desktop-slider .crw-recommendations__grid {
@@ -561,7 +560,6 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 	.crw-recommendations.crw-recommendations--tablet-columns .crw-product-card {
 		display: flex;
-		flex: initial;
 		flex-direction: column;
 	}
 
