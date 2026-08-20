@@ -747,3 +747,12 @@ section.crw-recommendations--checkout.crw-recommendations {
 	}
 
 }
+
+.crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-recommendations__grid {
+	overflow: visible !important;
+	scroll-snap-type: none !important;
+}
+
+.crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-product-card {
+	scroll-snap-align: none !important;
+}

@@ -4,7 +4,7 @@ Tags: woocommerce, recommendations, cart, checkout, products
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 
 Display conditional WooCommerce product recommendations on product pages, Classic Cart, and Classic Checkout.
@@ -14,6 +14,10 @@ Display conditional WooCommerce product recommendations on product pages, Classi
 Conditional Product Recommendations for WooCommerce lets store admins choose products to display as recommendations. Products already in the cart are automatically hidden from the recommendation section.
 
 == Changelog ==
+
+= 1.1.3 =
+* Fix mobile Swiper layout after page load.
+* Improve cart recommendation placement inside the cart form before coupon controls.
 
 = 1.1.2 =
 * Improve responsive Swiper slider behavior across desktop, tablet, and mobile.

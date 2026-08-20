@@ -136,6 +136,9 @@
 			spaceBetween: 12,
 			watchOverflow: true,
 			grabCursor: true,
+			observer: true,
+			observeParents: true,
+			resizeObserver: true,
 			pagination: {
 				el: section.querySelector('.crw-recommendations__slider-pagination'),
 				clickable: true
@@ -149,6 +152,27 @@
 
 	function initRecommendationSliders() {
 		document.querySelectorAll('.crw-recommendations--has-slider').forEach(initRecommendationSlider);
+	}
+
+	function placeCartRecommendations() {
+		var wrapper = document.querySelector('.crw-recommendations__cart-footer-fallback');
+		var form = document.querySelector('.woocommerce-cart-form');
+		var coupon;
+		var target;
+
+		if (!wrapper || !form || form.contains(wrapper)) {
+			return;
+		}
+
+		coupon = form.querySelector('.coupon, [name="coupon_code"]');
+		target = coupon ? coupon.closest('.coupon') || coupon : null;
+
+		if (target && target.parentNode) {
+			target.parentNode.insertBefore(wrapper, target);
+			return;
+		}
+
+		form.appendChild(wrapper);
 	}
 
 	function debounce(callback, delay) {
@@ -267,7 +291,16 @@
 		addToCart(button);
 	});
 
-	document.addEventListener('DOMContentLoaded', initRecommendationSliders);
-	window.addEventListener('load', initRecommendationSliders);
-	window.addEventListener('resize', debounce(initRecommendationSliders, 160));
+	document.addEventListener('DOMContentLoaded', function () {
+		placeCartRecommendations();
+		initRecommendationSliders();
+	});
+	window.addEventListener('load', function () {
+		placeCartRecommendations();
+		initRecommendationSliders();
+	});
+	window.addEventListener('resize', debounce(function () {
+		placeCartRecommendations();
+		initRecommendationSliders();
+	}, 160));
 })();
