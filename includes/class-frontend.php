@@ -47,9 +47,8 @@ class CRW_Frontend {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'woocommerce_after_add_to_cart_form', array( $this, 'render_product_recommendations' ) );
 		add_action( 'woocommerce_after_cart_table', array( $this, 'render_cart_recommendations' ) );
-		add_action( 'woocommerce_checkout_before_order_review', array( $this, 'render_checkout_recommendations' ), 20 );
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'render_checkout_recommendations' ) );
-		add_filter( 'render_block', array( $this, 'append_checkout_block_recommendations' ), 10, 2 );
+		add_filter( 'render_block', array( $this, 'append_block_recommendations' ), 10, 2 );
 	}
 
 	/**
@@ -72,6 +71,7 @@ class CRW_Frontend {
 				'nonce'   => wp_create_nonce( 'crw_add_to_cart' ),
 				'i18n'    => array(
 					'adding' => __( 'Adding...', 'conditional-product-recommendations' ),
+					'added'  => __( 'Product added to your cart.', 'conditional-product-recommendations' ),
 					'error'  => __( 'Unable to add product. Please try again.', 'conditional-product-recommendations' ),
 				),
 			)
@@ -106,26 +106,67 @@ class CRW_Frontend {
 	}
 
 	/**
-	 * Append recommendations after the WooCommerce Checkout Block.
+	 * Append recommendations inside WooCommerce Cart and Checkout blocks.
 	 *
 	 * @param string $block_content Rendered block content.
 	 * @param array  $block Block data.
 	 * @return string
 	 */
-	public function append_checkout_block_recommendations( $block_content, $block ) {
-		if ( empty( $block['blockName'] ) || 'woocommerce/checkout' !== $block['blockName'] ) {
+	public function append_block_recommendations( $block_content, $block ) {
+		if ( empty( $block['blockName'] ) ) {
 			return $block_content;
 		}
 
-		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
-			return $block_content;
+		if (
+			in_array( $block['blockName'], array( 'woocommerce/cart-items-block', 'woocommerce/cart' ), true )
+			&& function_exists( 'is_cart' )
+			&& is_cart()
+		) {
+			return $this->append_inside_block( $block_content, $this->get_recommendations_html( 'cart' ) );
 		}
 
+		if (
+			'woocommerce/checkout-order-summary-block' === $block['blockName']
+			&& function_exists( 'is_checkout' )
+			&& is_checkout()
+		) {
+			return $this->append_inside_block( $block_content, $this->get_recommendations_html( 'checkout' ) );
+		}
+
+		return $block_content;
+	}
+
+	/**
+	 * Render recommendations and return captured HTML.
+	 *
+	 * @param string $location Location.
+	 * @return string
+	 */
+	private function get_recommendations_html( $location ) {
 		ob_start();
-		$this->render_checkout_recommendations();
-		$recommendations = ob_get_clean();
+		$this->render_recommendations( $location );
+		return ob_get_clean();
+	}
 
-		return $block_content . $recommendations;
+	/**
+	 * Insert recommendations inside a rendered block wrapper.
+	 *
+	 * @param string $block_content Rendered block content.
+	 * @param string $recommendations Recommendations HTML.
+	 * @return string
+	 */
+	private function append_inside_block( $block_content, $recommendations ) {
+		if ( '' === trim( $recommendations ) ) {
+			return $block_content;
+		}
+
+		$position = strripos( $block_content, '</div>' );
+
+		if ( false === $position ) {
+			return $block_content . $recommendations;
+		}
+
+		return substr_replace( $block_content, $recommendations, $position, 0 );
 	}
 
 	/**

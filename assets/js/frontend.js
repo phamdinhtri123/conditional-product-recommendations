@@ -22,6 +22,52 @@
 		document.body.dispatchEvent(new Event('wc_fragments_refreshed'));
 	}
 
+	function showNotice(section, message, type) {
+		var notice;
+
+		if (!section || !message) {
+			return;
+		}
+
+		notice = section.querySelector('.crw-recommendations__notice');
+
+		if (!notice) {
+			notice = document.createElement('p');
+			notice.className = 'crw-recommendations__notice';
+			notice.setAttribute('role', 'status');
+			section.insertBefore(notice, section.querySelector('.crw-recommendations__grid'));
+		}
+
+		notice.classList.toggle('crw-recommendations__notice--error', type === 'error');
+		notice.textContent = message;
+	}
+
+	function refreshWooCommerceCart(data, button) {
+		var detail = data || {};
+
+		if (window.jQuery) {
+			window.jQuery(document.body).trigger('added_to_cart', [
+				detail.fragments || {},
+				detail.cart_hash || '',
+				window.jQuery(button)
+			]);
+			window.jQuery(document.body).trigger('wc_fragment_refresh');
+			window.jQuery(document.body).trigger('update_checkout');
+		}
+
+		document.body.dispatchEvent(new CustomEvent('crw_added_to_cart', {
+			detail: detail
+		}));
+	}
+
+	function usesCheckoutBlock() {
+		return !!document.querySelector('.wp-block-woocommerce-checkout, .wc-block-checkout');
+	}
+
+	function usesCartBlock() {
+		return !!document.querySelector('.wp-block-woocommerce-cart, .wc-block-cart');
+	}
+
 	function removeCard(button) {
 		var card = button.closest('.crw-product-card');
 		var section = button.closest('.crw-recommendations');
@@ -44,6 +90,7 @@
 	function addToCart(button) {
 		var productId = button.getAttribute('data-product-id');
 		var data = new window.FormData();
+		var section = button.closest('.crw-recommendations');
 
 		if (button.classList.contains('is-loading')) {
 			return;
@@ -77,13 +124,26 @@
 				}
 
 				updateFragments(response.data.fragments);
+				refreshWooCommerceCart(response.data, button);
+				showNotice(section, response.data.message || window.crwRecommendations.i18n.added, 'success');
+
+				if (section && (
+					(section.getAttribute('data-crw-location') === 'checkout' && usesCheckoutBlock())
+					|| (section.getAttribute('data-crw-location') === 'cart' && usesCartBlock())
+				)) {
+					window.setTimeout(function () {
+						window.location.reload();
+					}, 500);
+					return;
+				}
+
 				removeCard(button);
 			})
 			.catch(function (error) {
 				button.disabled = false;
 				button.classList.remove('is-loading');
 				button.removeAttribute('aria-busy');
-				window.alert(error.message || window.crwRecommendations.i18n.error);
+				showNotice(section, error.message || window.crwRecommendations.i18n.error, 'error');
 			});
 	}
 

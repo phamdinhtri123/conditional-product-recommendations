@@ -50,7 +50,33 @@ $section_style = sprintf(
 	<div class="crw-recommendations__grid">
 		<?php foreach ($products as $product) : ?>
 			<?php
+			$ajax_product_id = $product->get_id();
 			$ajax_addable = $product->is_type(array('simple', 'variation'));
+
+			if (! $ajax_addable && $product->is_type('variable')) {
+				$single_variation = null;
+
+				foreach ($product->get_children() as $variation_id) {
+					$variation = wc_get_product($variation_id);
+
+					if (! $variation || ! $variation->is_purchasable() || ! $variation->is_in_stock()) {
+						continue;
+					}
+
+					if ($single_variation) {
+						$single_variation = null;
+						break;
+					}
+
+					$single_variation = $variation;
+				}
+
+				if ($single_variation) {
+					$ajax_addable = true;
+					$ajax_product_id = $single_variation->get_id();
+				}
+			}
+
 			$button_label = $ajax_addable
 				? sprintf(
 					/* translators: %s: product name */
@@ -76,7 +102,7 @@ $section_style = sprintf(
 					<?php endif; ?>
 				</div>
 				<?php if (! empty($settings['show_add_button'])) : ?>
-					<button class="crw-product-card__add crw-product-card__add--<?php echo esc_attr($settings['add_button_style']); ?>" type="button" data-product-id="<?php echo esc_attr($product->get_id()); ?>" data-ajax-addable="<?php echo esc_attr($ajax_addable ? '1' : '0'); ?>" data-product-url="<?php echo esc_url(get_permalink($product->get_id())); ?>" <?php disabled(! $product->is_in_stock()); ?> aria-label="<?php echo esc_attr($button_label); ?>">
+					<button class="crw-product-card__add crw-product-card__add--<?php echo esc_attr($settings['add_button_style']); ?>" type="button" data-product-id="<?php echo esc_attr($ajax_product_id); ?>" data-ajax-addable="<?php echo esc_attr($ajax_addable ? '1' : '0'); ?>" data-product-url="<?php echo esc_url(get_permalink($product->get_id())); ?>" <?php disabled(! $product->is_in_stock()); ?> aria-label="<?php echo esc_attr($button_label); ?>">
 						<span class="crw-product-card__add-content">
 							<?php if ('custom_icon' === $settings['add_button_style'] && ! empty($settings['add_button_icon_url'])) : ?>
 								<img src="<?php echo esc_url($settings['add_button_icon_url']); ?>" alt="">

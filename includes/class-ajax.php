@@ -62,6 +62,15 @@ class CRW_Ajax {
 			);
 		}
 
+		if ( $product->is_type( 'variable' ) ) {
+			$single_variation = $this->get_single_addable_variation( $product );
+
+			if ( $single_variation ) {
+				$product    = $single_variation;
+				$product_id = $single_variation->get_id();
+			}
+		}
+
 		if ( ! $product->is_type( array( 'simple', 'variation' ) ) ) {
 			wp_send_json_error(
 				array(
@@ -74,10 +83,11 @@ class CRW_Ajax {
 		if ( $this->cart_service->cart_contains_product( $product_id ) ) {
 			wp_send_json_success(
 				array(
-					'product_id' => $product_id,
-					'fragments'  => $this->get_cart_fragments(),
-					'cart_hash'  => WC()->cart->get_cart_hash(),
+					'product_id'      => $product_id,
+					'fragments'       => $this->get_cart_fragments(),
+					'cart_hash'       => WC()->cart->get_cart_hash(),
 					'already_in_cart' => true,
+					'message'         => __( 'This product is already in your cart.', 'conditional-product-recommendations' ),
 				)
 			);
 		}
@@ -102,6 +112,24 @@ class CRW_Ajax {
 			);
 		}
 
+		WC()->cart->calculate_totals();
+
+		if ( method_exists( WC()->cart, 'set_session' ) ) {
+			WC()->cart->set_session();
+		}
+
+		if ( method_exists( WC()->cart, 'maybe_set_cart_cookies' ) ) {
+			WC()->cart->maybe_set_cart_cookies();
+		}
+
+		if ( WC()->session && method_exists( WC()->cart, 'get_cart_for_session' ) ) {
+			WC()->session->set( 'cart', WC()->cart->get_cart_for_session() );
+
+			if ( method_exists( WC()->session, 'set_customer_session_cookie' ) ) {
+				WC()->session->set_customer_session_cookie( true );
+			}
+		}
+
 		do_action( 'woocommerce_ajax_added_to_cart', $product_id );
 
 		wp_send_json_success(
@@ -109,8 +137,39 @@ class CRW_Ajax {
 				'product_id' => $product_id,
 				'fragments'  => $this->get_cart_fragments(),
 				'cart_hash'  => WC()->cart->get_cart_hash(),
+				'message'    => __( 'Product added to your cart.', 'conditional-product-recommendations' ),
 			)
 		);
+	}
+
+	/**
+	 * Get the only addable variation for a variable product.
+	 *
+	 * @param WC_Product $product Variable product.
+	 * @return WC_Product_Variation|null
+	 */
+	private function get_single_addable_variation( $product ) {
+		if ( ! $product || ! $product->is_type( 'variable' ) ) {
+			return null;
+		}
+
+		$single_variation = null;
+
+		foreach ( $product->get_children() as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
+
+			if ( ! $variation || ! $variation->is_purchasable() || ! $variation->is_in_stock() ) {
+				continue;
+			}
+
+			if ( $single_variation ) {
+				return null;
+			}
+
+			$single_variation = $variation;
+		}
+
+		return $single_variation;
 	}
 
 	/**

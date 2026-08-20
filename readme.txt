@@ -15,6 +15,11 @@ Conditional Product Recommendations for WooCommerce lets store admins choose pro
 
 == Changelog ==
 
+= 1.0.5 =
+* Fix the issue with adding products—both with and without variants—to the shopping cart.
+* Fix the issue where items are not displayed on the cart page.
+* Fix display issue in the order summary section on the checkout page.
+
 = 1.0.4 =
 * Edit product card style
 * Fix error when adding products to the cart
