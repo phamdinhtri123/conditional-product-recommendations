@@ -51,6 +51,7 @@ class CRW_Frontend {
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'render_checkout_recommendations' ) );
 		add_filter( 'render_block', array( $this, 'append_block_recommendations' ), 10, 2 );
 		add_filter( 'the_content', array( $this, 'append_cart_content_recommendations' ), 20 );
+		add_action( 'wp_footer', array( $this, 'render_cart_footer_fallback' ), 5 );
 	}
 
 	/**
@@ -120,8 +121,6 @@ class CRW_Frontend {
 			is_admin()
 			|| ! function_exists( 'is_cart' )
 			|| ! is_cart()
-			|| ! in_the_loop()
-			|| ! is_main_query()
 		) {
 			return $content;
 		}
@@ -142,6 +141,14 @@ class CRW_Frontend {
 		}
 
 		if (
+			function_exists( 'is_cart' )
+			&& is_cart()
+			&& 0 === strpos( $block['blockName'], 'woocommerce/cart' )
+		) {
+			return $this->append_inside_block( $block_content, $this->get_recommendations_html( 'cart' ) );
+		}
+
+		if (
 			'woocommerce/checkout-order-summary-block' === $block['blockName']
 			&& function_exists( 'is_checkout' )
 			&& is_checkout()
@@ -150,6 +157,25 @@ class CRW_Frontend {
 		}
 
 		return $block_content;
+	}
+
+	/**
+	 * Last-resort cart render for themes that bypass cart hooks/content filters.
+	 *
+	 * @return void
+	 */
+	public function render_cart_footer_fallback() {
+		if (
+			! function_exists( 'is_cart' )
+			|| ! is_cart()
+			|| ! empty( $this->rendered_locations['cart'] )
+		) {
+			return;
+		}
+
+		echo '<div class="crw-recommendations__cart-footer-fallback">';
+		$this->render_cart_recommendations();
+		echo '</div>';
 	}
 
 	/**

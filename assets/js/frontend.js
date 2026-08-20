@@ -24,6 +24,7 @@
 
 	function showNotice(section, message, type) {
 		var notice;
+		var target;
 
 		if (!section || !message) {
 			return;
@@ -35,7 +36,13 @@
 			notice = document.createElement('p');
 			notice.className = 'crw-recommendations__notice';
 			notice.setAttribute('role', 'status');
-			section.insertBefore(notice, section.querySelector('.crw-recommendations__grid'));
+			target = section.querySelector('.crw-recommendations__slider') || section.querySelector('.crw-recommendations__grid') || section.querySelector('.crw-recommendations__note');
+
+			if (target && target.parentNode === section) {
+				section.insertBefore(notice, target);
+			} else {
+				section.appendChild(notice);
+			}
 		}
 
 		notice.classList.toggle('crw-recommendations__notice--error', type === 'error');
@@ -105,7 +112,7 @@
 
 		section.crwSwiper = new window.Swiper(slider, {
 			slidesPerView: 'auto',
-			spaceBetween: 16,
+			spaceBetween: 12,
 			watchOverflow: true,
 			grabCursor: true,
 			pagination: {
