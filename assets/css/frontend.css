@@ -6,12 +6,13 @@ section.crw-recommendations {
 	clear: both;
 	display: block !important;
 	width: 100% !important;
-	margin: 16px 0 !important;
+	margin: 16px auto !important;
 	padding: 20px !important;
 	color: #111827 !important;
 	font-family: inherit !important;
 	background: #2563eb10;
 	border-radius: 16px;
+	max-width: calc(100% - 30px);
 }
 
 .crw-recommendations .crw-recommendations__header {

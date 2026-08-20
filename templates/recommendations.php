@@ -15,19 +15,27 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
-$custom_class = ! empty($settings['custom_css_class']) ? sanitize_html_class($settings['custom_css_class']) : 'crw-recommendations';
-$layout_class = 'rows' === $settings['layout_mode'] ? 'crw-recommendations--rows' : 'crw-recommendations--columns';
+$custom_classes = ! empty($settings['custom_css_class']) ? preg_split('/\s+/', $settings['custom_css_class']) : array();
+$custom_classes = array_filter(array_map('sanitize_html_class', (array) $custom_classes));
+$layout_mode = ! empty($settings[$location . '_layout_mode']) ? $settings[$location . '_layout_mode'] : $settings['layout_mode'];
+$columns_desktop = ! empty($settings[$location . '_columns_desktop']) ? $settings[$location . '_columns_desktop'] : $settings['columns_desktop'];
+$columns_tablet = ! empty($settings[$location . '_columns_tablet']) ? $settings[$location . '_columns_tablet'] : $settings['columns_tablet'];
+$columns_mobile = ! empty($settings[$location . '_columns_mobile']) ? $settings[$location . '_columns_mobile'] : $settings['columns_mobile'];
+$layout_class = 'rows' === $layout_mode ? 'crw-recommendations--rows' : 'crw-recommendations--columns';
+$location_class = 'crw-recommendations--' . sanitize_html_class($location);
 $animation_class = ! empty($settings['enable_animation']) ? 'crw-recommendations--animated' : '';
 $button_class = ! empty($settings['show_add_button']) ? 'crw-recommendations--has-add-button' : 'crw-recommendations--no-add-button';
+$section_classes = array_merge(array('crw-recommendations', $location_class, $layout_class, $animation_class, $button_class), $custom_classes);
+$section_classes = array_filter(array_unique($section_classes));
 $section_style = sprintf(
 	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;',
 	esc_attr($settings['primary_color']),
-	absint($settings['columns_desktop']),
-	absint($settings['columns_tablet']),
-	absint($settings['columns_mobile'])
+	absint($columns_desktop),
+	absint($columns_tablet),
+	absint($columns_mobile)
 );
 ?>
-<section class="crw-recommendations <?php echo esc_attr($custom_class . ' ' . $layout_class . ' ' . $animation_class . ' ' . $button_class); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">
+<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">
 	<div class="crw-recommendations__header">
 		<div class="crw-recommendations__title-row">
 			<span class="crw-recommendations__icon <?php echo ! empty($settings['heading_icon_url']) ? 'crw-recommendations__icon--custom' : ''; ?>" aria-hidden="true">

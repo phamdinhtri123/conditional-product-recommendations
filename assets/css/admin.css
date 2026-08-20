@@ -61,6 +61,18 @@
 	max-width: 360px;
 }
 
+.crw-advanced-options .crw-inline-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 8px 12px 0 0;
+}
+
+.crw-advanced-options .crw-inline-field select {
+	width: auto;
+	min-width: 56px;
+}
+
 .crw-media-field {
 	display: flex;
 	flex-wrap: wrap;

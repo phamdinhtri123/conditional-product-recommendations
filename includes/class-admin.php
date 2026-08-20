@@ -348,19 +348,9 @@ class CRW_Admin {
 		$this->render_text_field( 'subtitle', __( 'Subtitle / Description', 'conditional-product-recommendations' ), $settings['subtitle'] );
 		$this->render_number_field( 'max_products', __( 'Max Products to Show', 'conditional-product-recommendations' ), $settings['max_products'], 1, 24 );
 
-		$this->render_select_field(
-			'layout_mode',
-			__( 'Item Layout', 'conditional-product-recommendations' ),
-			$settings['layout_mode'],
-			array(
-				'columns' => __( 'Columns / Grid', 'conditional-product-recommendations' ),
-				'rows'    => __( 'Each item on one row', 'conditional-product-recommendations' ),
-			)
-		);
-
-		$this->render_column_select( 'columns_desktop', __( 'Columns (Desktop)', 'conditional-product-recommendations' ), $settings['columns_desktop'] );
-		$this->render_column_select( 'columns_tablet', __( 'Columns (Tablet)', 'conditional-product-recommendations' ), $settings['columns_tablet'] );
-		$this->render_column_select( 'columns_mobile', __( 'Columns (Mobile)', 'conditional-product-recommendations' ), $settings['columns_mobile'] );
+		$this->render_location_layout_fields( 'product', __( 'Product Page Layout', 'conditional-product-recommendations' ), $settings );
+		$this->render_location_layout_fields( 'cart', __( 'Cart Layout', 'conditional-product-recommendations' ), $settings );
+		$this->render_location_layout_fields( 'checkout', __( 'Checkout Layout', 'conditional-product-recommendations' ), $settings );
 		$this->render_toggle_field( 'show_out_of_stock', __( 'Show Out of Stock', 'conditional-product-recommendations' ), $settings['show_out_of_stock'] );
 		$this->render_toggle_field( 'show_price', __( 'Show Price', 'conditional-product-recommendations' ), $settings['show_price'] );
 		$this->render_toggle_field( 'show_add_button', __( 'Show Add Button', 'conditional-product-recommendations' ), $settings['show_add_button'] );
@@ -391,7 +381,7 @@ class CRW_Admin {
 			)
 		);
 
-		$this->render_text_field( 'custom_css_class', __( 'Custom CSS Class', 'conditional-product-recommendations' ), $settings['custom_css_class'] );
+		$this->render_custom_css_class_field( $settings['custom_css_class'] );
 		$this->render_color_field( 'primary_color', __( 'Primary Color', 'conditional-product-recommendations' ), $settings['primary_color'] );
 		$this->render_toggle_field( 'enable_animation', __( 'Enable Animation', 'conditional-product-recommendations' ), $settings['enable_animation'] );
 
@@ -409,6 +399,20 @@ class CRW_Admin {
 	private function render_text_field( $key, $label, $value ) {
 		echo '<tr><th scope="row"><label for="crw-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
 		echo '<input id="crw-' . esc_attr( $key ) . '" class="regular-text" type="text" name="display_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '">';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render custom class field with fixed base classes shown separately.
+	 *
+	 * @param string $value Value.
+	 * @return void
+	 */
+	private function render_custom_css_class_field( $value ) {
+		echo '<tr><th scope="row"><label for="crw-custom_css_class">' . esc_html__( 'Additional CSS Classes', 'conditional-product-recommendations' ) . '</label></th><td>';
+		echo '<code>crw-recommendations</code> <code>crw-recommendations--product</code> <code>crw-recommendations--cart</code> <code>crw-recommendations--checkout</code>';
+		echo '<p><input id="crw-custom_css_class" class="regular-text" type="text" name="display_settings[custom_css_class]" value="' . esc_attr( $value ) . '" placeholder="' . esc_attr__( 'extra-class another-class', 'conditional-product-recommendations' ) . '"></p>';
+		echo '<p class="description">' . esc_html__( 'Base classes are always added automatically. Use this field only for extra custom classes.', 'conditional-product-recommendations' ) . '</p>';
 		echo '</td></tr>';
 	}
 
@@ -480,6 +484,53 @@ class CRW_Admin {
 		}
 
 		$this->render_select_field( $key, $label, (string) $value, $options );
+	}
+
+	/**
+	 * Render layout controls for one frontend location.
+	 *
+	 * @param string $location Location key.
+	 * @param string $label Label.
+	 * @param array  $settings Settings.
+	 * @return void
+	 */
+	private function render_location_layout_fields( $location, $label, array $settings ) {
+		echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>';
+		echo '<fieldset>';
+		echo '<label for="crw-' . esc_attr( $location ) . '_layout_mode">' . esc_html__( 'Layout', 'conditional-product-recommendations' ) . '</label> ';
+		echo '<select id="crw-' . esc_attr( $location ) . '_layout_mode" name="display_settings[' . esc_attr( $location ) . '_layout_mode]">';
+		echo '<option value="columns" ' . selected( $settings[ $location . '_layout_mode' ], 'columns', false ) . '>' . esc_html__( 'Columns / Grid', 'conditional-product-recommendations' ) . '</option>';
+		echo '<option value="rows" ' . selected( $settings[ $location . '_layout_mode' ], 'rows', false ) . '>' . esc_html__( 'Each item on one row', 'conditional-product-recommendations' ) . '</option>';
+		echo '</select> ';
+
+		echo '<span class="crw-inline-field">' . esc_html__( 'Desktop', 'conditional-product-recommendations' ) . ' ';
+		$this->render_column_select_control( $location . '_columns_desktop', $settings[ $location . '_columns_desktop' ] );
+		echo '</span> ';
+
+		echo '<span class="crw-inline-field">' . esc_html__( 'Tablet', 'conditional-product-recommendations' ) . ' ';
+		$this->render_column_select_control( $location . '_columns_tablet', $settings[ $location . '_columns_tablet' ] );
+		echo '</span> ';
+
+		echo '<span class="crw-inline-field">' . esc_html__( 'Mobile', 'conditional-product-recommendations' ) . ' ';
+		$this->render_column_select_control( $location . '_columns_mobile', $settings[ $location . '_columns_mobile' ] );
+		echo '</span>';
+		echo '</fieldset>';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Render a compact column select control.
+	 *
+	 * @param string $key Field key.
+	 * @param int    $value Value.
+	 * @return void
+	 */
+	private function render_column_select_control( $key, $value ) {
+		echo '<select name="display_settings[' . esc_attr( $key ) . ']">';
+		for ( $i = 1; $i <= 6; $i++ ) {
+			echo '<option value="' . esc_attr( $i ) . '" ' . selected( (string) $value, (string) $i, false ) . '>' . esc_html( $i ) . '</option>';
+		}
+		echo '</select>';
 	}
 
 	/**
