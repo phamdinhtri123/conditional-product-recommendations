@@ -45,13 +45,23 @@
 		var productId = button.getAttribute('data-product-id');
 		var data = new window.FormData();
 
+		if (button.classList.contains('is-loading')) {
+			return;
+		}
+
+		button.disabled = true;
+		button.classList.add('is-loading');
+		button.setAttribute('aria-busy', 'true');
+
+		if (button.getAttribute('data-ajax-addable') !== '1') {
+			window.location.href = button.getAttribute('data-product-url');
+			return;
+		}
+
 		data.append('action', 'crw_add_to_cart');
 		data.append('nonce', window.crwRecommendations.nonce);
 		data.append('product_id', productId);
 		data.append('quantity', '1');
-
-		button.disabled = true;
-		button.setAttribute('aria-busy', 'true');
 
 		window.fetch(window.crwRecommendations.ajaxUrl, {
 			method: 'POST',
@@ -71,6 +81,7 @@
 			})
 			.catch(function (error) {
 				button.disabled = false;
+				button.classList.remove('is-loading');
 				button.removeAttribute('aria-busy');
 				window.alert(error.message || window.crwRecommendations.i18n.error);
 			});

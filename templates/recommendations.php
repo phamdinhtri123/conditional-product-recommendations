@@ -49,6 +49,20 @@ $section_style = sprintf(
 	</div>
 	<div class="crw-recommendations__grid">
 		<?php foreach ($products as $product) : ?>
+			<?php
+			$ajax_addable = $product->is_type(array('simple', 'variation'));
+			$button_label = $ajax_addable
+				? sprintf(
+					/* translators: %s: product name */
+					__('Add %s to cart', 'conditional-product-recommendations'),
+					$product->get_name()
+				)
+				: sprintf(
+					/* translators: %s: product name */
+					__('View options for %s', 'conditional-product-recommendations'),
+					$product->get_name()
+				);
+			?>
 			<article class="crw-product-card" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
 				<a class="crw-product-card__image-link" href="<?php echo esc_url(get_permalink($product->get_id())); ?>">
 					<?php echo wp_kses_post($product->get_image('woocommerce_thumbnail', array('class' => 'crw-product-card__image'))); ?>
@@ -57,38 +71,27 @@ $section_style = sprintf(
 					<a class="crw-product-card__name" href="<?php echo esc_url(get_permalink($product->get_id())); ?>">
 						<?php echo esc_html($product->get_name()); ?>
 					</a>
-					<?php if ($product->get_short_description()) : ?>
-						<div class="crw-product-card__description"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($product->get_short_description()), 8)); ?></div>
-					<?php endif; ?>
 					<?php if (! empty($settings['show_price'])) : ?>
 						<div class="crw-product-card__price"><?php echo wp_kses_post($product->get_price_html()); ?></div>
 					<?php endif; ?>
 				</div>
 				<?php if (! empty($settings['show_add_button'])) : ?>
-					<button class="crw-product-card__add crw-product-card__add--<?php echo esc_attr($settings['add_button_style']); ?>" type="button" data-product-id="<?php echo esc_attr($product->get_id()); ?>" <?php disabled(! $product->is_in_stock()); ?> aria-label="<?php echo esc_attr(sprintf( /* translators: %s: product name */__('Add %s to cart', 'conditional-product-recommendations'), $product->get_name())); ?>">
-						<?php if ('custom_icon' === $settings['add_button_style'] && ! empty($settings['add_button_icon_url'])) : ?>
-							<img src="<?php echo esc_url($settings['add_button_icon_url']); ?>" alt="">
-						<?php elseif ('text' === $settings['add_button_style']) : ?>
-							<span><?php echo esc_html__('Add', 'conditional-product-recommendations'); ?></span>
-						<?php else : ?>
-							<span class="crw-add-to-cart-default">
-								<span class="crw-product-card__add-text" aria-hidden="true"><?php echo esc_html__('Add', 'conditional-product-recommendations'); ?></span>
+					<button class="crw-product-card__add crw-product-card__add--<?php echo esc_attr($settings['add_button_style']); ?>" type="button" data-product-id="<?php echo esc_attr($product->get_id()); ?>" data-ajax-addable="<?php echo esc_attr($ajax_addable ? '1' : '0'); ?>" data-product-url="<?php echo esc_url(get_permalink($product->get_id())); ?>" <?php disabled(! $product->is_in_stock()); ?> aria-label="<?php echo esc_attr($button_label); ?>">
+						<span class="crw-product-card__add-content">
+							<?php if ('custom_icon' === $settings['add_button_style'] && ! empty($settings['add_button_icon_url'])) : ?>
+								<img src="<?php echo esc_url($settings['add_button_icon_url']); ?>" alt="">
+							<?php elseif ('text' === $settings['add_button_style']) : ?>
+								<span><?php echo esc_html($ajax_addable ? __('Add', 'conditional-product-recommendations') : __('Options', 'conditional-product-recommendations')); ?></span>
+							<?php else : ?>
 								<span aria-hidden="true">
 									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
 										<path d="M0 0h16v16H0z" fill="none" />
 										<path fill="currentColor" d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5z" />
 									</svg>
 								</span>
-							</span>
-						<?php endif; ?>
-						<span class="crw-add-to-cart-loading" aria-hidden="true">
-							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-								<path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8a8 8 0 0 1-8 8Z" opacity=".5" />
-								<path fill="currentColor" d="M22 12h-4a1 1 0 0 0 0 2h4a1 1 0 0 0 0-2Z">
-									<animateTransform attributeName="transform" dur="1s" from="0 12 12" repeatCount="indefinite" to="360 12 12" type="rotate" />
-								</path>
-							</svg>
+							<?php endif; ?>
 						</span>
+						<span class="crw-product-card__add-spinner" aria-hidden="true"></span>
 					</button>
 				<?php endif; ?>
 			</article>

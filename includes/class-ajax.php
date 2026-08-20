@@ -62,6 +62,15 @@ class CRW_Ajax {
 			);
 		}
 
+		if ( ! $product->is_type( array( 'simple', 'variation' ) ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Please choose product options before adding this product to the cart.', 'conditional-product-recommendations' ),
+				),
+				400
+			);
+		}
+
 		if ( $this->cart_service->cart_contains_product( $product_id ) ) {
 			wp_send_json_success(
 				array(

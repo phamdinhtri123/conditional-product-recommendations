@@ -28,6 +28,13 @@ class CRW_Frontend {
 	private $evaluator;
 
 	/**
+	 * Render guard by location.
+	 *
+	 * @var array
+	 */
+	private $rendered_locations = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param CRW_Rule_Repository $repository Repository.
@@ -40,7 +47,9 @@ class CRW_Frontend {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'woocommerce_after_add_to_cart_form', array( $this, 'render_product_recommendations' ) );
 		add_action( 'woocommerce_after_cart_table', array( $this, 'render_cart_recommendations' ) );
+		add_action( 'woocommerce_checkout_before_order_review', array( $this, 'render_checkout_recommendations' ), 20 );
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'render_checkout_recommendations' ) );
+		add_filter( 'render_block', array( $this, 'append_checkout_block_recommendations' ), 10, 2 );
 	}
 
 	/**
@@ -97,12 +106,39 @@ class CRW_Frontend {
 	}
 
 	/**
+	 * Append recommendations after the WooCommerce Checkout Block.
+	 *
+	 * @param string $block_content Rendered block content.
+	 * @param array  $block Block data.
+	 * @return string
+	 */
+	public function append_checkout_block_recommendations( $block_content, $block ) {
+		if ( empty( $block['blockName'] ) || 'woocommerce/checkout' !== $block['blockName'] ) {
+			return $block_content;
+		}
+
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+			return $block_content;
+		}
+
+		ob_start();
+		$this->render_checkout_recommendations();
+		$recommendations = ob_get_clean();
+
+		return $block_content . $recommendations;
+	}
+
+	/**
 	 * Shared renderer for all locations.
 	 *
 	 * @param string $location Location.
 	 * @return void
 	 */
 	public function render_recommendations( $location ) {
+		if ( ! empty( $this->rendered_locations[ $location ] ) ) {
+			return;
+		}
+
 		$context     = $this->get_recommendation_context( $location );
 		$product_ids = $context['product_ids'];
 		$settings    = $context['settings'];
@@ -124,6 +160,8 @@ class CRW_Frontend {
 		}
 
 		$heading = apply_filters( 'crw_recommendations_heading', $settings['heading_text'], $location );
+
+		$this->rendered_locations[ $location ] = true;
 
 		include CRW_PLUGIN_DIR . 'templates/recommendations.php';
 	}
