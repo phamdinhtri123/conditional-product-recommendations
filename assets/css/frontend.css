@@ -257,6 +257,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 .crw-recommendations.crw-recommendations--desktop-slider .crw-product-card {
 	flex: 0 0 var(--crw-slider-desktop-basis);
+	width: var(--crw-slider-desktop-basis) !important;
 	scroll-snap-align: start;
 }
 
@@ -611,7 +612,8 @@ section.crw-recommendations--checkout.crw-recommendations {
 	.crw-recommendations.crw-recommendations--tablet-slider .crw-product-card {
 		display: flex;
 		flex-direction: column;
-		flex-basis: var(--crw-slider-tablet-basis);
+		flex: 0 0 var(--crw-slider-tablet-basis);
+		width: var(--crw-slider-tablet-basis) !important;
 		scroll-snap-align: start;
 	}
 
@@ -728,7 +730,8 @@ section.crw-recommendations--checkout.crw-recommendations {
 	.crw-recommendations.crw-recommendations--mobile-slider .crw-product-card {
 		display: flex;
 		flex-direction: column;
-		flex-basis: var(--crw-slider-mobile-basis);
+		flex: 0 0 var(--crw-slider-mobile-basis);
+		width: var(--crw-slider-mobile-basis) !important;
 		scroll-snap-align: start;
 	}
 

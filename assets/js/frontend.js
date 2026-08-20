@@ -76,8 +76,7 @@
 	}
 
 	function getActiveLayout(section) {
-		var width = window.innerWidth || document.documentElement.clientWidth;
-		var breakpoint = width <= 520 ? 'mobile' : (width <= 760 ? 'tablet' : 'desktop');
+		var breakpoint = getActiveBreakpoint();
 		var modes = ['slider', 'rows', 'columns'];
 		var index;
 
@@ -90,13 +89,29 @@
 		return 'columns';
 	}
 
+	function getActiveBreakpoint() {
+		var width = window.innerWidth || document.documentElement.clientWidth;
+
+		if (width <= 520) {
+			return 'mobile';
+		}
+
+		if (width <= 760) {
+			return 'tablet';
+		}
+
+		return 'desktop';
+	}
+
 	function initRecommendationSlider(section) {
 		var slider = section.querySelector('.crw-recommendations__slider');
-		var width = window.innerWidth || document.documentElement.clientWidth;
-		var isDesktop = width > 760;
+		var breakpoint = getActiveBreakpoint();
+		var isDesktop = breakpoint === 'desktop';
 		var isSlider = getActiveLayout(section) === 'slider';
 
 		section.classList.toggle('crw-recommendations--active-desktop', isDesktop);
+		section.classList.toggle('crw-recommendations--active-tablet', breakpoint === 'tablet');
+		section.classList.toggle('crw-recommendations--active-mobile', breakpoint === 'mobile');
 		section.classList.toggle('crw-recommendations--active-slider', isSlider);
 
 		if (!slider || !window.Swiper) {
