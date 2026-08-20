@@ -52,6 +52,7 @@ class CRW_Frontend {
 		add_filter( 'render_block', array( $this, 'append_block_recommendations' ), 10, 2 );
 		add_filter( 'the_content', array( $this, 'append_cart_content_recommendations' ), 20 );
 		add_action( 'wp_footer', array( $this, 'render_cart_footer_fallback' ), 5 );
+		add_action( 'wp_footer', array( $this, 'render_debug_comment' ), 999 );
 	}
 
 	/**
@@ -119,8 +120,7 @@ class CRW_Frontend {
 	public function append_cart_content_recommendations( $content ) {
 		if (
 			is_admin()
-			|| ! function_exists( 'is_cart' )
-			|| ! is_cart()
+			|| ! $this->is_cart_screen()
 		) {
 			return $content;
 		}
@@ -140,11 +140,7 @@ class CRW_Frontend {
 			return $block_content;
 		}
 
-		if (
-			function_exists( 'is_cart' )
-			&& is_cart()
-			&& 0 === strpos( $block['blockName'], 'woocommerce/cart' )
-		) {
+		if ( 'woocommerce/cart' === $block['blockName'] ) {
 			return $this->append_inside_block( $block_content, $this->get_recommendations_html( 'cart' ) );
 		}
 
@@ -166,8 +162,7 @@ class CRW_Frontend {
 	 */
 	public function render_cart_footer_fallback() {
 		if (
-			! function_exists( 'is_cart' )
-			|| ! is_cart()
+			! $this->is_cart_screen()
 			|| ! empty( $this->rendered_locations['cart'] )
 		) {
 			return;
@@ -176,6 +171,36 @@ class CRW_Frontend {
 		echo '<div class="crw-recommendations__cart-footer-fallback">';
 		$this->render_cart_recommendations();
 		echo '</div>';
+	}
+
+	/**
+	 * Print opt-in diagnostics for admins checking cart rendering.
+	 *
+	 * @return void
+	 */
+	public function render_debug_comment() {
+		if (
+			! isset( $_GET['crw_debug'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			|| ! current_user_can( 'manage_woocommerce' )
+		) {
+			return;
+		}
+
+		$context     = $this->get_recommendation_context( 'cart' );
+		$product_ids = implode( ',', array_map( 'absint', $context['product_ids'] ) );
+		$settings    = $context['settings'];
+
+		printf(
+			"\n<!-- CRW debug cart: is_cart=%s; has_cart_block=%s; has_cart_shortcode=%s; is_cart_screen=%s; rendered_cart=%s; product_count=%d; product_ids=%s; max_products=%d -->\n",
+			esc_html( function_exists( 'is_cart' ) && is_cart() ? 'yes' : 'no' ),
+			esc_html( $this->current_page_has_block( 'woocommerce/cart' ) ? 'yes' : 'no' ),
+			esc_html( $this->current_page_has_shortcode( 'woocommerce_cart' ) ? 'yes' : 'no' ),
+			esc_html( $this->is_cart_screen() ? 'yes' : 'no' ),
+			esc_html( empty( $this->rendered_locations['cart'] ) ? 'no' : 'yes' ),
+			absint( count( $context['product_ids'] ) ),
+			esc_html( $product_ids ),
+			absint( $settings['max_products'] )
+		);
 	}
 
 	/**
@@ -370,7 +395,52 @@ class CRW_Frontend {
 	 */
 	private function is_recommendation_screen() {
 		return ( function_exists( 'is_product' ) && is_product() )
-			|| ( function_exists( 'is_cart' ) && is_cart() )
+			|| $this->is_cart_screen()
 			|| ( function_exists( 'is_checkout' ) && is_checkout() );
+	}
+
+	/**
+	 * Detect cart pages, including Cart Block pages where is_cart() is false.
+	 *
+	 * @return bool
+	 */
+	private function is_cart_screen() {
+		if ( function_exists( 'is_cart' ) && is_cart() ) {
+			return true;
+		}
+
+		return $this->current_page_has_block( 'woocommerce/cart' ) || $this->current_page_has_shortcode( 'woocommerce_cart' );
+	}
+
+	/**
+	 * Check if the current singular page contains a specific block.
+	 *
+	 * @param string $block_name Block name.
+	 * @return bool
+	 */
+	private function current_page_has_block( $block_name ) {
+		if ( ! is_singular() || ! function_exists( 'has_block' ) ) {
+			return false;
+		}
+
+		$post = get_post();
+
+		return $post && has_block( $block_name, $post );
+	}
+
+	/**
+	 * Check if the current singular page contains a shortcode.
+	 *
+	 * @param string $shortcode Shortcode tag.
+	 * @return bool
+	 */
+	private function current_page_has_shortcode( $shortcode ) {
+		if ( ! is_singular() || ! function_exists( 'has_shortcode' ) ) {
+			return false;
+		}
+
+		$post = get_post();
+
+		return $post && has_shortcode( $post->post_content, $shortcode );
 	}
 }

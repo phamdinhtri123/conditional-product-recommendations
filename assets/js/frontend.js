@@ -92,12 +92,18 @@
 
 	function initRecommendationSlider(section) {
 		var slider = section.querySelector('.crw-recommendations__slider');
+		var width = window.innerWidth || document.documentElement.clientWidth;
+		var isDesktop = width > 760;
+		var isSlider = getActiveLayout(section) === 'slider';
+
+		section.classList.toggle('crw-recommendations--active-desktop', isDesktop);
+		section.classList.toggle('crw-recommendations--active-slider', isSlider);
 
 		if (!slider || !window.Swiper) {
 			return;
 		}
 
-		if (getActiveLayout(section) !== 'slider') {
+		if (!isSlider) {
 			if (section.crwSwiper) {
 				section.crwSwiper.destroy(true, true);
 				section.crwSwiper = null;
@@ -112,7 +118,7 @@
 
 		section.crwSwiper = new window.Swiper(slider, {
 			slidesPerView: 'auto',
-			spaceBetween: 12,
+			spaceBetween: 0,
 			watchOverflow: true,
 			grabCursor: true,
 			pagination: {
