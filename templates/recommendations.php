@@ -17,22 +17,32 @@ if (! defined('ABSPATH')) {
 
 $custom_classes = ! empty($settings['custom_css_class']) ? preg_split('/\s+/', $settings['custom_css_class']) : array();
 $custom_classes = array_filter(array_map('sanitize_html_class', (array) $custom_classes));
-$layout_mode = ! empty($settings[$location . '_layout_mode']) ? $settings[$location . '_layout_mode'] : $settings['layout_mode'];
+$desktop_layout_mode = ! empty($settings[$location . '_desktop_layout_mode']) ? $settings[$location . '_desktop_layout_mode'] : (! empty($settings[$location . '_layout_mode']) ? $settings[$location . '_layout_mode'] : $settings['layout_mode']);
+$tablet_layout_mode = ! empty($settings[$location . '_tablet_layout_mode']) ? $settings[$location . '_tablet_layout_mode'] : $desktop_layout_mode;
+$mobile_layout_mode = ! empty($settings[$location . '_mobile_layout_mode']) ? $settings[$location . '_mobile_layout_mode'] : $tablet_layout_mode;
 $columns_desktop = ! empty($settings[$location . '_columns_desktop']) ? $settings[$location . '_columns_desktop'] : $settings['columns_desktop'];
 $columns_tablet = ! empty($settings[$location . '_columns_tablet']) ? $settings[$location . '_columns_tablet'] : $settings['columns_tablet'];
 $columns_mobile = ! empty($settings[$location . '_columns_mobile']) ? $settings[$location . '_columns_mobile'] : $settings['columns_mobile'];
-$layout_class = 'rows' === $layout_mode ? 'crw-recommendations--rows' : 'crw-recommendations--columns';
+$slider_desktop_basis = absint($columns_desktop) <= 1 ? 'calc(100% - 42px)' : (100 / max(1, absint($columns_desktop))) . '%';
+$slider_tablet_basis = absint($columns_tablet) <= 1 ? 'calc(100% - 36px)' : (100 / max(1, absint($columns_tablet))) . '%';
+$slider_mobile_basis = absint($columns_mobile) <= 1 ? 'calc(100% - 32px)' : (100 / max(1, absint($columns_mobile))) . '%';
+$desktop_layout_class = 'crw-recommendations--desktop-' . sanitize_html_class($desktop_layout_mode);
+$tablet_layout_class = 'crw-recommendations--tablet-' . sanitize_html_class($tablet_layout_mode);
+$mobile_layout_class = 'crw-recommendations--mobile-' . sanitize_html_class($mobile_layout_mode);
 $location_class = 'crw-recommendations--' . sanitize_html_class($location);
 $animation_class = ! empty($settings['enable_animation']) ? 'crw-recommendations--animated' : '';
 $button_class = ! empty($settings['show_add_button']) ? 'crw-recommendations--has-add-button' : 'crw-recommendations--no-add-button';
-$section_classes = array_merge(array('crw-recommendations', $location_class, $layout_class, $animation_class, $button_class), $custom_classes);
+$section_classes = array_merge(array('crw-recommendations', $location_class, $desktop_layout_class, $tablet_layout_class, $mobile_layout_class, $animation_class, $button_class), $custom_classes);
 $section_classes = array_filter(array_unique($section_classes));
 $section_style = sprintf(
-	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;',
+	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;',
 	esc_attr($settings['primary_color']),
 	absint($columns_desktop),
 	absint($columns_tablet),
-	absint($columns_mobile)
+	absint($columns_mobile),
+	esc_attr($slider_desktop_basis),
+	esc_attr($slider_tablet_basis),
+	esc_attr($slider_mobile_basis)
 );
 ?>
 <section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">

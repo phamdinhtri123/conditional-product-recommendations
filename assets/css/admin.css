@@ -73,6 +73,28 @@
 	min-width: 56px;
 }
 
+.crw-responsive-layout-fields {
+	display: grid;
+	gap: 10px;
+}
+
+.crw-responsive-layout-row {
+	display: grid;
+	grid-template-columns: 90px minmax(180px, 280px) minmax(90px, 120px);
+	gap: 12px;
+	align-items: center;
+}
+
+.crw-responsive-layout-row label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.crw-responsive-layout-row select {
+	width: auto;
+}
+
 .crw-media-field {
 	display: flex;
 	flex-wrap: wrap;

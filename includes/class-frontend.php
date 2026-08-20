@@ -118,10 +118,6 @@ class CRW_Frontend {
 			return $block_content;
 		}
 
-		if ( function_exists( 'is_cart' ) && is_cart() && $this->is_cart_recommendation_block( $block['blockName'] ) ) {
-			return $this->append_inside_block( $block_content, $this->get_recommendations_html( 'cart' ) );
-		}
-
 		if (
 			'woocommerce/checkout-order-summary-block' === $block['blockName']
 			&& function_exists( 'is_checkout' )
@@ -131,27 +127,6 @@ class CRW_Frontend {
 		}
 
 		return $block_content;
-	}
-
-	/**
-	 * Check whether a Cart Block position can host recommendations.
-	 *
-	 * @param string $block_name Block name.
-	 * @return bool
-	 */
-	private function is_cart_recommendation_block( $block_name ) {
-		return in_array(
-			$block_name,
-			array(
-				'woocommerce/cart',
-				'woocommerce/filled-cart-block',
-				'woocommerce/cart-items-block',
-				'woocommerce/cart-line-items-block',
-				'woocommerce/cart-totals-block',
-				'woocommerce/cart-order-summary-block',
-			),
-			true
-		);
 	}
 
 	/**

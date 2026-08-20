@@ -496,26 +496,51 @@ class CRW_Admin {
 	 */
 	private function render_location_layout_fields( $location, $label, array $settings ) {
 		echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>';
-		echo '<fieldset>';
-		echo '<label for="crw-' . esc_attr( $location ) . '_layout_mode">' . esc_html__( 'Layout', 'conditional-product-recommendations' ) . '</label> ';
-		echo '<select id="crw-' . esc_attr( $location ) . '_layout_mode" name="display_settings[' . esc_attr( $location ) . '_layout_mode]">';
-		echo '<option value="columns" ' . selected( $settings[ $location . '_layout_mode' ], 'columns', false ) . '>' . esc_html__( 'Columns / Grid', 'conditional-product-recommendations' ) . '</option>';
-		echo '<option value="rows" ' . selected( $settings[ $location . '_layout_mode' ], 'rows', false ) . '>' . esc_html__( 'Each item on one row', 'conditional-product-recommendations' ) . '</option>';
-		echo '</select> ';
-
-		echo '<span class="crw-inline-field">' . esc_html__( 'Desktop', 'conditional-product-recommendations' ) . ' ';
-		$this->render_column_select_control( $location . '_columns_desktop', $settings[ $location . '_columns_desktop' ] );
-		echo '</span> ';
-
-		echo '<span class="crw-inline-field">' . esc_html__( 'Tablet', 'conditional-product-recommendations' ) . ' ';
-		$this->render_column_select_control( $location . '_columns_tablet', $settings[ $location . '_columns_tablet' ] );
-		echo '</span> ';
-
-		echo '<span class="crw-inline-field">' . esc_html__( 'Mobile', 'conditional-product-recommendations' ) . ' ';
-		$this->render_column_select_control( $location . '_columns_mobile', $settings[ $location . '_columns_mobile' ] );
-		echo '</span>';
+		echo '<fieldset class="crw-responsive-layout-fields">';
+		$this->render_breakpoint_layout_row( $location, 'desktop', __( 'Desktop', 'conditional-product-recommendations' ), $settings );
+		$this->render_breakpoint_layout_row( $location, 'tablet', __( 'Tablet', 'conditional-product-recommendations' ), $settings );
+		$this->render_breakpoint_layout_row( $location, 'mobile', __( 'Mobile', 'conditional-product-recommendations' ), $settings );
 		echo '</fieldset>';
 		echo '</td></tr>';
+	}
+
+	/**
+	 * Render one responsive layout row.
+	 *
+	 * @param string $location Location key.
+	 * @param string $breakpoint Breakpoint key.
+	 * @param string $label Label.
+	 * @param array  $settings Settings.
+	 * @return void
+	 */
+	private function render_breakpoint_layout_row( $location, $breakpoint, $label, array $settings ) {
+		$layout_key = $location . '_' . $breakpoint . '_layout_mode';
+		$columns_key = 'desktop' === $breakpoint ? $location . '_columns_desktop' : $location . '_columns_' . $breakpoint;
+
+		echo '<div class="crw-responsive-layout-row">';
+		echo '<strong>' . esc_html( $label ) . '</strong>';
+		echo '<label>' . esc_html__( 'Layout', 'conditional-product-recommendations' ) . ' ';
+		$this->render_layout_select_control( $layout_key, $settings[ $layout_key ] );
+		echo '</label>';
+		echo '<label>' . esc_html__( 'Columns', 'conditional-product-recommendations' ) . ' ';
+		$this->render_column_select_control( $columns_key, $settings[ $columns_key ] );
+		echo '</label>';
+		echo '</div>';
+	}
+
+	/**
+	 * Render compact layout select control.
+	 *
+	 * @param string $key Field key.
+	 * @param string $value Value.
+	 * @return void
+	 */
+	private function render_layout_select_control( $key, $value ) {
+		echo '<select name="display_settings[' . esc_attr( $key ) . ']">';
+		echo '<option value="columns" ' . selected( $value, 'columns', false ) . '>' . esc_html__( 'Columns / Grid', 'conditional-product-recommendations' ) . '</option>';
+		echo '<option value="rows" ' . selected( $value, 'rows', false ) . '>' . esc_html__( 'Each item on one row', 'conditional-product-recommendations' ) . '</option>';
+		echo '<option value="slider" ' . selected( $value, 'slider', false ) . '>' . esc_html__( 'Slider', 'conditional-product-recommendations' ) . '</option>';
+		echo '</select>';
 	}
 
 	/**
