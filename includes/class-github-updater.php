@@ -52,6 +52,48 @@ class CRW_Github_Updater {
 		if ( '' !== $token && method_exists( $update_checker, 'setAuthentication' ) ) {
 			$update_checker->setAuthentication( $token );
 		}
+
+		if ( method_exists( $update_checker, 'addFilter' ) ) {
+			$update_checker->addFilter( 'pre_inject_update', array( $this, 'prefer_codeload_download_url' ) );
+		}
+	}
+
+	/**
+	 * Use GitHub's direct archive endpoint instead of the API zipball URL.
+	 *
+	 * @param object|null $update Update metadata.
+	 * @return object|null
+	 */
+	public function prefer_codeload_download_url( $update ) {
+		if ( empty( $update->download_url ) ) {
+			return $update;
+		}
+
+		$parts = wp_parse_url( $update->download_url );
+		if (
+			empty( $parts['host'] )
+			|| 'api.github.com' !== strtolower( $parts['host'] )
+			|| empty( $parts['path'] )
+		) {
+			return $update;
+		}
+
+		if ( ! preg_match( '#^/repos/([^/]+)/([^/]+)/zipball/(.+)$#', $parts['path'], $matches ) ) {
+			return $update;
+		}
+
+		$owner = rawurldecode( $matches[1] );
+		$repo  = rawurldecode( $matches[2] );
+		$ref   = rawurldecode( $matches[3] );
+
+		$update->download_url = sprintf(
+			'https://codeload.github.com/%1$s/%2$s/zip/refs/tags/%3$s',
+			rawurlencode( $owner ),
+			rawurlencode( $repo ),
+			rawurlencode( $ref )
+		);
+
+		return $update;
 	}
 
 	/**
