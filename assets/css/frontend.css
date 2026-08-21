@@ -25,9 +25,18 @@ section.crw-recommendations--checkout.crw-recommendations {
 	padding: 0 16px;
 }
 
+.crw-recommendations__cart-summary-placement {
+	width: 100%;
+	margin: 16px 0;
+	padding: 0;
+}
+
 .cart_totals .crw-recommendations__cart-footer-fallback,
+.cart_totals .crw-recommendations__cart-summary-placement,
 .wc-block-cart__sidebar .crw-recommendations__cart-footer-fallback,
-.wp-block-woocommerce-cart-order-summary-block .crw-recommendations__cart-footer-fallback {
+.wc-block-cart__sidebar .crw-recommendations__cart-summary-placement,
+.wp-block-woocommerce-cart-order-summary-block .crw-recommendations__cart-footer-fallback,
+.wp-block-woocommerce-cart-order-summary-block .crw-recommendations__cart-summary-placement {
 	width: 100%;
 	margin: 16px 0;
 	padding: 0;

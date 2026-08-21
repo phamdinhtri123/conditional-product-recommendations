@@ -110,6 +110,7 @@
 		var isDesktop = breakpoint === 'desktop';
 		var isSlider = getActiveLayout(section) === 'slider';
 		var slides = section.querySelectorAll('.crw-product-card');
+		var sliderGap = parseFloat(window.getComputedStyle(section).getPropertyValue('--crw-slider-gap')) || 12;
 
 		section.classList.toggle('crw-recommendations--active-desktop', isDesktop);
 		section.classList.toggle('crw-recommendations--active-tablet', breakpoint === 'tablet');
@@ -151,7 +152,7 @@
 
 		section.crwSwiper = new window.Swiper(slider, {
 			slidesPerView: 'auto',
-			spaceBetween: 12,
+			spaceBetween: sliderGap,
 			watchOverflow: true,
 			grabCursor: true,
 			observer: true,
@@ -173,7 +174,7 @@
 	}
 
 	function placeCartRecommendations() {
-		var wrapper = document.querySelector('.crw-recommendations__cart-footer-fallback');
+		var wrapper = document.querySelector('.crw-recommendations__cart-summary-placement') || document.querySelector('.crw-recommendations__cart-footer-fallback');
 		var target;
 		var insertBefore;
 		var selectors = [
@@ -196,14 +197,22 @@
 			}
 		}
 
-		if (!target || target.contains(wrapper)) {
+		if (!target) {
 			return;
 		}
 
 		insertBefore = target.querySelector('.wc-proceed-to-checkout, .wp-block-woocommerce-proceed-to-checkout-block');
 
+		if (wrapper.parentNode === target && (!insertBefore || wrapper.nextElementSibling === insertBefore)) {
+			return;
+		}
+
 		if (insertBefore && insertBefore.parentNode === target) {
 			target.insertBefore(wrapper, insertBefore);
+			return;
+		}
+
+		if (target.contains(wrapper)) {
 			return;
 		}
 

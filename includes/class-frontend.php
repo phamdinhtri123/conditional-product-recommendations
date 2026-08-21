@@ -97,7 +97,7 @@ class CRW_Frontend {
 	 * @return void
 	 */
 	public function render_cart_recommendations() {
-		$this->render_recommendations( 'cart' );
+		$this->render_cart_summary_recommendations();
 	}
 
 	/**
@@ -176,7 +176,26 @@ class CRW_Frontend {
 		}
 
 		echo '<div class="crw-recommendations__cart-footer-fallback">';
-		$this->render_cart_recommendations();
+		$this->render_cart_summary_recommendations();
+		echo '</div>';
+	}
+
+	/**
+	 * Render cart recommendations in a movable summary wrapper.
+	 *
+	 * @return void
+	 */
+	private function render_cart_summary_recommendations() {
+		ob_start();
+		$this->render_recommendations( 'cart' );
+		$recommendations = ob_get_clean();
+
+		if ( '' === trim( $recommendations ) ) {
+			return;
+		}
+
+		echo '<div class="crw-recommendations__cart-summary-placement">';
+		echo $recommendations; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</div>';
 	}
 

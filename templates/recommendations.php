@@ -23,9 +23,13 @@ $mobile_layout_mode = ! empty($settings[$location . '_mobile_layout_mode']) ? $s
 $columns_desktop = ! empty($settings[$location . '_columns_desktop']) ? $settings[$location . '_columns_desktop'] : $settings['columns_desktop'];
 $columns_tablet = ! empty($settings[$location . '_columns_tablet']) ? $settings[$location . '_columns_tablet'] : $settings['columns_tablet'];
 $columns_mobile = ! empty($settings[$location . '_columns_mobile']) ? $settings[$location . '_columns_mobile'] : $settings['columns_mobile'];
-$slider_desktop_basis = 'calc((100% - 42px) / ' . max(1, absint($columns_desktop)) . ')';
-$slider_tablet_basis = 'calc((100% - 36px) / ' . max(1, absint($columns_tablet)) . ')';
-$slider_mobile_basis = 'calc((100% - 32px) / ' . max(1, absint($columns_mobile)) . ')';
+$slider_gap = 12;
+$slider_desktop_columns = max(1, absint($columns_desktop));
+$slider_tablet_columns = max(1, absint($columns_tablet));
+$slider_mobile_columns = max(1, absint($columns_mobile));
+$slider_desktop_basis = 'calc((100% - ' . (($slider_desktop_columns - 1) * $slider_gap) . 'px) / ' . $slider_desktop_columns . ')';
+$slider_tablet_basis = 'calc((100% - ' . (($slider_tablet_columns - 1) * $slider_gap) . 'px) / ' . $slider_tablet_columns . ')';
+$slider_mobile_basis = 'calc((100% - ' . (($slider_mobile_columns - 1) * $slider_gap) . 'px) / ' . $slider_mobile_columns . ')';
 $has_slider = in_array('slider', array($desktop_layout_mode, $tablet_layout_mode, $mobile_layout_mode), true);
 $desktop_layout_class = 'crw-recommendations--desktop-' . sanitize_html_class($desktop_layout_mode);
 $tablet_layout_class = 'crw-recommendations--tablet-' . sanitize_html_class($tablet_layout_mode);
@@ -37,14 +41,15 @@ $slider_class = $has_slider ? 'crw-recommendations--has-slider' : '';
 $section_classes = array_merge(array('crw-recommendations', $location_class, $desktop_layout_class, $tablet_layout_class, $mobile_layout_class, $animation_class, $button_class, $slider_class), $custom_classes);
 $section_classes = array_filter(array_unique($section_classes));
 $section_style = sprintf(
-	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;',
+	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;--crw-slider-gap:%8$dpx;',
 	esc_attr($settings['primary_color']),
 	absint($columns_desktop),
 	absint($columns_tablet),
 	absint($columns_mobile),
 	esc_attr($slider_desktop_basis),
 	esc_attr($slider_tablet_basis),
-	esc_attr($slider_mobile_basis)
+	esc_attr($slider_mobile_basis),
+	absint($slider_gap)
 );
 ?>
 <section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">
