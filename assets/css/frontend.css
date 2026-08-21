@@ -782,6 +782,5 @@ section.crw-recommendations--checkout.crw-recommendations {
 }
 
 .crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-product-card {
-	flex: 0 0 auto !important;
 	scroll-snap-align: none !important;
 }
