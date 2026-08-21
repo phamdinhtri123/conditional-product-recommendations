@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Conditional Product Recommendations for WooCommerce
  * Description: Display conditional WooCommerce product recommendations on product, cart, and checkout pages.
- * Version: 1.1.6
+ * Version: 1.1.7
  * Author: SeaMKT
  * Text Domain: conditional-product-recommendations
  * Requires Plugins: woocommerce
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CRW_VERSION', '1.1.6' );
+define( 'CRW_VERSION', '1.1.7' );
 define( 'CRW_PLUGIN_FILE', __FILE__ );
 define( 'CRW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CRW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

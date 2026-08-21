@@ -280,7 +280,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 .crw-recommendations.crw-recommendations--active-desktop.crw-recommendations--active-slider .crw-product-card {
 	flex: 0 0 var(--crw-slider-desktop-basis);
-	width: var(--crw-slider-desktop-basis) !important;
+	width: var(--crw-slider-desktop-basis);
 	scroll-snap-align: start;
 }
 
@@ -636,7 +636,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 		display: flex;
 		flex-direction: column;
 		flex: 0 0 var(--crw-slider-tablet-basis);
-		width: var(--crw-slider-tablet-basis) !important;
+		width: var(--crw-slider-tablet-basis);
 		scroll-snap-align: start;
 	}
 
@@ -740,6 +740,11 @@ section.crw-recommendations--checkout.crw-recommendations {
 		max-width: 100%;
 	}
 
+	.crw-recommendations.crw-recommendations--active-mobile.crw-recommendations--active-slider .crw-recommendations__slider {
+		--crw-slider-mobile-peek: calc(var(--crw-slider-gap) * 3);
+		margin-right: calc(var(--crw-slider-mobile-peek) * -1);
+	}
+
 	.crw-recommendations.crw-recommendations--active-mobile.crw-recommendations--active-slider .crw-recommendations__grid {
 		display: flex;
 		grid-template-columns: none;
@@ -754,7 +759,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 		display: flex;
 		flex-direction: column;
 		flex: 0 0 var(--crw-slider-mobile-basis);
-		width: var(--crw-slider-mobile-basis) !important;
+		width: var(--crw-slider-mobile-basis);
 		scroll-snap-align: start;
 	}
 
@@ -777,5 +782,6 @@ section.crw-recommendations--checkout.crw-recommendations {
 }
 
 .crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-product-card {
+	flex: 0 0 auto !important;
 	scroll-snap-align: none !important;
 }

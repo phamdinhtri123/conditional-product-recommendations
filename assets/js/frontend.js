@@ -103,6 +103,17 @@
 		return 'desktop';
 	}
 
+	function getActiveColumns(section, breakpoint) {
+		var value = window.getComputedStyle(section).getPropertyValue('--crw-columns-' + breakpoint);
+		var columns = parseInt(value, 10);
+
+		return columns > 0 ? columns : 1;
+	}
+
+	function getSliderSlidesPerView(section, breakpoint) {
+		return getActiveColumns(section, breakpoint) + 0.16;
+	}
+
 	function initRecommendationSlider(section) {
 		var slider = section.querySelector('.crw-recommendations__slider');
 		var grid = section.querySelector('.crw-recommendations__grid');
@@ -111,6 +122,7 @@
 		var isSlider = getActiveLayout(section) === 'slider';
 		var slides = section.querySelectorAll('.crw-product-card');
 		var sliderGap = parseFloat(window.getComputedStyle(section).getPropertyValue('--crw-slider-gap')) || 12;
+		var slidesPerView = getSliderSlidesPerView(section, breakpoint);
 
 		section.classList.toggle('crw-recommendations--active-desktop', isDesktop);
 		section.classList.toggle('crw-recommendations--active-tablet', breakpoint === 'tablet');
@@ -146,6 +158,8 @@
 		}
 
 		if (section.crwSwiper) {
+			section.crwSwiper.params.slidesPerView = slidesPerView;
+			section.crwSwiper.params.spaceBetween = sliderGap;
 			section.crwSwiper.update();
 			if (breakpoint === 'mobile') {
 				section.crwSwiper.slideTo(0, 0, false);
@@ -157,7 +171,7 @@
 		slider.scrollLeft = 0;
 
 		section.crwSwiper = new window.Swiper(slider, {
-			slidesPerView: 'auto',
+			slidesPerView: slidesPerView,
 			spaceBetween: sliderGap,
 			watchOverflow: true,
 			grabCursor: true,
@@ -220,7 +234,7 @@
 		if (!wrapper) {
 			if (isCrwDebugEnabled() && window.console && window.console.info) {
 				window.console.info('[CRW cart placement]', {
-					status: 'missing-wrapper'
+					status: document.querySelector('.crw-recommendations--cart') ? 'missing-wrapper-has-section' : 'missing-wrapper'
 				});
 			}
 			return;
