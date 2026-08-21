@@ -147,8 +147,14 @@
 
 		if (section.crwSwiper) {
 			section.crwSwiper.update();
+			if (breakpoint === 'mobile') {
+				section.crwSwiper.slideTo(0, 0, false);
+			}
 			return;
 		}
+
+		grid.scrollLeft = 0;
+		slider.scrollLeft = 0;
 
 		section.crwSwiper = new window.Swiper(slider, {
 			slidesPerView: 'auto',
@@ -167,16 +173,42 @@
 				nextEl: section.querySelector('.crw-recommendations__slider-button--next')
 			}
 		});
+
+		if (breakpoint === 'mobile') {
+			section.crwSwiper.slideTo(0, 0, false);
+		}
 	}
 
 	function initRecommendationSliders() {
 		document.querySelectorAll('.crw-recommendations--has-slider').forEach(initRecommendationSlider);
 	}
 
+	function isCrwDebugEnabled() {
+		return window.location.search.indexOf('crw_debug=1') !== -1;
+	}
+
+	function debugCartPlacement(wrapper, status, selector) {
+		if (!wrapper) {
+			return;
+		}
+
+		wrapper.setAttribute('data-crw-placement-status', status);
+		wrapper.setAttribute('data-crw-placement-target', selector || '');
+
+		if (isCrwDebugEnabled() && window.console && window.console.info) {
+			window.console.info('[CRW cart placement]', {
+				status: status,
+				target: selector || '',
+				wrapper: wrapper
+			});
+		}
+	}
+
 	function placeCartRecommendations() {
 		var wrapper = document.querySelector('.crw-recommendations__cart-summary-placement') || document.querySelector('.crw-recommendations__cart-footer-fallback');
 		var target;
 		var insertBefore;
+		var matchedSelector = '';
 		var selectors = [
 			'.wp-block-woocommerce-cart-order-summary-block',
 			'.wc-block-cart__sidebar',
@@ -186,6 +218,11 @@
 		var index;
 
 		if (!wrapper) {
+			if (isCrwDebugEnabled() && window.console && window.console.info) {
+				window.console.info('[CRW cart placement]', {
+					status: 'missing-wrapper'
+				});
+			}
 			return;
 		}
 
@@ -193,30 +230,36 @@
 			target = document.querySelector(selectors[index]);
 
 			if (target) {
+				matchedSelector = selectors[index];
 				break;
 			}
 		}
 
 		if (!target) {
+			debugCartPlacement(wrapper, 'missing-target', '');
 			return;
 		}
 
 		insertBefore = target.querySelector('.wc-proceed-to-checkout, .wp-block-woocommerce-proceed-to-checkout-block');
 
 		if (wrapper.parentNode === target && (!insertBefore || wrapper.nextElementSibling === insertBefore)) {
+			debugCartPlacement(wrapper, 'already-placed', matchedSelector);
 			return;
 		}
 
 		if (insertBefore && insertBefore.parentNode === target) {
 			target.insertBefore(wrapper, insertBefore);
+			debugCartPlacement(wrapper, 'inserted-before-checkout', matchedSelector);
 			return;
 		}
 
 		if (target.contains(wrapper)) {
+			debugCartPlacement(wrapper, 'already-inside-target', matchedSelector);
 			return;
 		}
 
 		target.appendChild(wrapper);
+		debugCartPlacement(wrapper, 'appended-to-target', matchedSelector);
 	}
 
 	function debounce(callback, delay) {

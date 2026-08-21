@@ -249,6 +249,12 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 .crw-recommendations .crw-recommendations__slider {
 	position: relative;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.crw-recommendations .crw-recommendations__slider.swiper-initialized {
+	overflow: hidden !important;
 }
 
 .crw-recommendations.crw-recommendations--active-desktop.crw-recommendations--active-slider .crw-recommendations__grid {
@@ -731,13 +737,13 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 	.crw-recommendations.crw-recommendations--active-mobile.crw-recommendations--active-slider {
 		overflow: hidden;
+		max-width: 100%;
 	}
 
 	.crw-recommendations.crw-recommendations--active-mobile.crw-recommendations--active-slider .crw-recommendations__grid {
 		display: flex;
 		grid-template-columns: none;
 		gap: 0;
-		margin: 0;
 		padding: 0;
 		overflow-x: auto;
 		overflow-y: hidden;
