@@ -55,9 +55,14 @@ $section_style = sprintf(
 <section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">
 	<div class="crw-recommendations__header">
 		<div class="crw-recommendations__title-row">
-			<span class="crw-recommendations__icon <?php echo $heading_icon_url ? 'crw-recommendations__icon--custom' : ''; ?>" aria-hidden="true">
+			<span class="crw-recommendations__icon crw-recommendations__icon--custom" aria-hidden="true">
 				<?php if ($heading_icon_url) : ?>
 					<img src="<?php echo $heading_icon_url; ?>" alt="">
+				<?php else : ?>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+						<path d="M0 0h24v24H0z" fill="none" />
+						<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M15 18a3 3 0 1 1-6 0m-2.957 0a2.03 2.03 0 0 1-1.718-.95a2.08 2.08 0 0 1-.142-1.972l.545-1.212A13.5 13.5 0 0 0 5.882 9.23l.031-.473A6.2 6.2 0 0 1 7.83 4.666A6.07 6.07 0 0 1 11.998 3a6.07 6.07 0 0 1 4.168 1.666a6.2 6.2 0 0 1 1.917 4.09l.031.474a13.5 13.5 0 0 0 1.154 4.636l.546 1.211a2.08 2.08 0 0 1-.138 1.976a2.03 2.03 0 0 1-1.723.947z" />
+					</svg>
 				<?php endif; ?>
 			</span>
 			<div class="crw-recommendations__copy">

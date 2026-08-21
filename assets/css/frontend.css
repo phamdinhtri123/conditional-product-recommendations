@@ -101,10 +101,12 @@ section.crw-recommendations--checkout.crw-recommendations {
 	}
 }
 
-.crw-recommendations .crw-recommendations__icon img {
+.crw-recommendations .crw-recommendations__icon img,
+.crw-recommendations .crw-recommendations__icon svg {
 	display: block;
 	width: 100%;
 	height: 100%;
+	color: var(--crw-primary);
 	object-fit: contain;
 }
 
