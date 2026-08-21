@@ -360,12 +360,22 @@
 		if (toggle) {
 			var section = toggle.closest('.crw-recommendations');
 			var text = toggle.querySelector('.crw-recommendations__hide-text');
+			var swiper;
 			var collapsed = section.classList.toggle('is-collapsed');
 
 			toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 
 			if (text) {
 				text.textContent = collapsed ? 'Show' : 'Hide';
+			}
+
+			if (!collapsed) {
+				swiper = section.crwSwiper;
+				window.setTimeout(function () {
+					if (swiper) {
+						swiper.update();
+					}
+				}, 0);
 			}
 
 			return;
