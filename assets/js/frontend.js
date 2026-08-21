@@ -359,7 +359,14 @@
 			var section = toggle.closest('.crw-recommendations');
 			var text = toggle.querySelector('.crw-recommendations__hide-text');
 			var swiper;
-			var collapsed = section.classList.toggle('is-collapsed');
+			var collapsed;
+
+			if (!section) {
+				return;
+			}
+
+			event.preventDefault();
+			collapsed = section.classList.toggle('is-collapsed');
 
 			toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 

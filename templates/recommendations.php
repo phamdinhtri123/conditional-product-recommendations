@@ -40,6 +40,7 @@ $button_class = ! empty($settings['show_add_button']) ? 'crw-recommendations--ha
 $slider_class = $has_slider ? 'crw-recommendations--has-slider' : '';
 $section_classes = array_merge(array('crw-recommendations', $location_class, $desktop_layout_class, $tablet_layout_class, $mobile_layout_class, $animation_class, $button_class, $slider_class), $custom_classes);
 $section_classes = array_filter(array_unique($section_classes));
+$heading_icon_url = ! empty($settings['heading_icon_url']) ? esc_url($settings['heading_icon_url']) : '';
 $section_style = sprintf(
 	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;',
 	esc_attr($settings['primary_color']),
@@ -54,9 +55,9 @@ $section_style = sprintf(
 <section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">
 	<div class="crw-recommendations__header">
 		<div class="crw-recommendations__title-row">
-			<span class="crw-recommendations__icon <?php echo ! empty($settings['heading_icon_url']) ? 'crw-recommendations__icon--custom' : ''; ?>" aria-hidden="true">
-				<?php if (! empty($settings['heading_icon_url'])) : ?>
-					<img src="<?php echo esc_url($settings['heading_icon_url']); ?>" alt="">
+			<span class="crw-recommendations__icon <?php echo $heading_icon_url ? 'crw-recommendations__icon--custom' : ''; ?>" aria-hidden="true">
+				<?php if ($heading_icon_url) : ?>
+					<img src="<?php echo $heading_icon_url; ?>" alt="">
 				<?php endif; ?>
 			</span>
 			<div class="crw-recommendations__copy">
