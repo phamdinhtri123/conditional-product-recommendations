@@ -110,7 +110,6 @@
 		var isDesktop = breakpoint === 'desktop';
 		var isSlider = getActiveLayout(section) === 'slider';
 		var slides = section.querySelectorAll('.crw-product-card');
-		var sliderGap = parseFloat(window.getComputedStyle(section).getPropertyValue('--crw-slider-gap')) || 12;
 
 		section.classList.toggle('crw-recommendations--active-desktop', isDesktop);
 		section.classList.toggle('crw-recommendations--active-tablet', breakpoint === 'tablet');
@@ -146,7 +145,6 @@
 		}
 
 		if (section.crwSwiper) {
-			section.crwSwiper.params.spaceBetween = sliderGap;
 			section.crwSwiper.update();
 			if (breakpoint === 'mobile') {
 				section.crwSwiper.slideTo(0, 0, false);
@@ -159,7 +157,7 @@
 
 		section.crwSwiper = new window.Swiper(slider, {
 			slidesPerView: 'auto',
-			spaceBetween: sliderGap,
+			spaceBetween: 12,
 			watchOverflow: true,
 			grabCursor: true,
 			observer: true,

@@ -41,15 +41,14 @@ $slider_class = $has_slider ? 'crw-recommendations--has-slider' : '';
 $section_classes = array_merge(array('crw-recommendations', $location_class, $desktop_layout_class, $tablet_layout_class, $mobile_layout_class, $animation_class, $button_class, $slider_class), $custom_classes);
 $section_classes = array_filter(array_unique($section_classes));
 $section_style = sprintf(
-	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;--crw-slider-gap:%8$dpx;',
+	'--crw-primary:%1$s;--crw-columns-desktop:%2$d;--crw-columns-tablet:%3$d;--crw-columns-mobile:%4$d;--crw-slider-desktop-basis:%5$s;--crw-slider-tablet-basis:%6$s;--crw-slider-mobile-basis:%7$s;',
 	esc_attr($settings['primary_color']),
 	absint($columns_desktop),
 	absint($columns_tablet),
 	absint($columns_mobile),
 	esc_attr($slider_desktop_basis),
 	esc_attr($slider_tablet_basis),
-	esc_attr($slider_mobile_basis),
-	absint($slider_gap)
+	esc_attr($slider_mobile_basis)
 );
 ?>
 <section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" style="<?php echo esc_attr($section_style); ?>" data-crw-location="<?php echo esc_attr($location); ?>">

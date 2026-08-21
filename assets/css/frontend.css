@@ -16,13 +16,6 @@ section.crw-recommendations {
 	border-radius: 16px;
 }
 
-.crw-recommendations,
-.crw-recommendations *,
-.crw-recommendations *::before,
-.crw-recommendations *::after {
-	box-sizing: border-box;
-}
-
 section.crw-recommendations--checkout.crw-recommendations {
 	max-width: calc(100% - 30px);
 }
@@ -212,10 +205,6 @@ section.crw-recommendations--checkout.crw-recommendations {
 	list-style: none;
 }
 
-.crw-recommendations--active-desktop.crw-recommendations--active-slider .crw-recommendations__grid {
-	gap: 0;
-}
-
 .crw-recommendations .crw-recommendations__notice {
 	margin: 14px 0 0;
 	padding: 9px 11px;
@@ -274,30 +263,12 @@ section.crw-recommendations--checkout.crw-recommendations {
 	grid-template-columns: none;
 	margin: 20px 0 0;
 	padding: 0;
-	overflow-x: auto;
-	overflow-y: hidden;
-	scroll-snap-type: x mandatory;
-	scroll-padding-left: 0;
-	-webkit-overflow-scrolling: touch;
-}
-
-.crw-recommendations.crw-recommendations--active-desktop.crw-recommendations--active-slider .crw-recommendations__grid::-webkit-scrollbar {
-	height: 6px;
-}
-
-.crw-recommendations.crw-recommendations--active-desktop.crw-recommendations--active-slider .crw-recommendations__grid::-webkit-scrollbar-thumb {
-	border-radius: 999px;
-	background: rgba(17, 24, 39, 0.22);
+	gap: 0;
 }
 
 .crw-recommendations.crw-recommendations--active-desktop.crw-recommendations--active-slider .crw-product-card {
 	flex: 0 0 var(--crw-slider-desktop-basis);
 	width: var(--crw-slider-desktop-basis);
-	scroll-snap-align: start;
-}
-
-.crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-recommendations__grid {
-	overflow: visible;
 }
 
 .crw-recommendations .crw-recommendations__slider-pagination {
@@ -356,6 +327,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 
 .crw-recommendations .crw-product-card {
 	position: relative;
+	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
@@ -365,6 +337,12 @@ section.crw-recommendations--checkout.crw-recommendations {
 	border-radius: 14px;
 	background: #fff;
 	/* box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07); */
+}
+
+.crw-recommendations .crw-product-card *,
+.crw-recommendations .crw-product-card *::before,
+.crw-recommendations .crw-product-card *::after {
+	box-sizing: border-box;
 }
 
 .crw-recommendations .crw-product-card__image-link {
@@ -642,11 +620,8 @@ section.crw-recommendations--checkout.crw-recommendations {
 		display: flex;
 		grid-template-columns: none;
 		gap: 0;
-		margin: 0 -16px 0 0;
-		padding: 0 36px 8px 0;
-		overflow-x: auto;
-		overflow-y: hidden;
-		scroll-snap-type: x mandatory;
+		margin: 0;
+		padding: 0;
 	}
 
 	.crw-recommendations.crw-recommendations--active-tablet.crw-recommendations--active-slider .crw-product-card {
@@ -654,7 +629,6 @@ section.crw-recommendations--checkout.crw-recommendations {
 		flex-direction: column;
 		flex: 0 0 var(--crw-slider-tablet-basis);
 		width: var(--crw-slider-tablet-basis);
-		scroll-snap-align: start;
 	}
 
 	.crw-recommendations .crw-recommendations__heading {
@@ -762,10 +736,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 		grid-template-columns: none;
 		gap: 0;
 		padding: 0;
-		overflow-x: auto;
-		overflow-y: hidden;
-		scroll-snap-type: x mandatory;
-		margin-right: calc(var(--crw-slider-gap) * -3);
+		margin-right: 0;
 	}
 
 	.crw-recommendations.crw-recommendations--active-mobile.crw-recommendations--active-slider .crw-product-card {
@@ -773,7 +744,6 @@ section.crw-recommendations--checkout.crw-recommendations {
 		flex-direction: column;
 		flex: 0 0 var(--crw-slider-mobile-basis);
 		width: var(--crw-slider-mobile-basis);
-		scroll-snap-align: start;
 	}
 
 
@@ -787,13 +757,4 @@ section.crw-recommendations--checkout.crw-recommendations {
 		aspect-ratio: 1/1;
 	}
 
-}
-
-.crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-recommendations__grid {
-	overflow: hidden !important;
-	scroll-snap-type: none !important;
-}
-
-.crw-recommendations .crw-recommendations__slider.swiper-initialized .crw-product-card {
-	scroll-snap-align: none !important;
 }
