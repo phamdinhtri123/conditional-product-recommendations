@@ -736,7 +736,7 @@ section.crw-recommendations--checkout.crw-recommendations {
 		grid-template-columns: none;
 		gap: 0;
 		padding: 0;
-		margin-right: 0;
+		margin-right: -36px;
 	}
 
 	.crw-recommendations.crw-recommendations--active-mobile.crw-recommendations--active-slider .crw-product-card {
