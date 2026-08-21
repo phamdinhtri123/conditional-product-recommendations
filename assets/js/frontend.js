@@ -105,17 +105,23 @@
 
 	function initRecommendationSlider(section) {
 		var slider = section.querySelector('.crw-recommendations__slider');
+		var grid = section.querySelector('.crw-recommendations__grid');
 		var breakpoint = getActiveBreakpoint();
 		var isDesktop = breakpoint === 'desktop';
 		var isSlider = getActiveLayout(section) === 'slider';
+		var slides = section.querySelectorAll('.crw-product-card');
 
 		section.classList.toggle('crw-recommendations--active-desktop', isDesktop);
 		section.classList.toggle('crw-recommendations--active-tablet', breakpoint === 'tablet');
 		section.classList.toggle('crw-recommendations--active-mobile', breakpoint === 'mobile');
 		section.classList.toggle('crw-recommendations--active-slider', isSlider);
 
-		if (!slider || !window.Swiper) {
-			return;
+		if (slider && grid && isSlider) {
+			slider.classList.add('swiper');
+			grid.classList.add('swiper-wrapper');
+			slides.forEach(function (slide) {
+				slide.classList.add('swiper-slide');
+			});
 		}
 
 		if (!isSlider) {
@@ -123,6 +129,18 @@
 				section.crwSwiper.destroy(true, true);
 				section.crwSwiper = null;
 			}
+			if (slider && grid) {
+				slider.classList.remove('swiper', 'swiper-initialized', 'swiper-horizontal', 'swiper-backface-hidden');
+				grid.classList.remove('swiper-wrapper');
+				slides.forEach(function (slide) {
+					slide.classList.remove('swiper-slide');
+					slide.removeAttribute('style');
+				});
+			}
+			return;
+		}
+
+		if (!slider || !window.Swiper) {
 			return;
 		}
 
@@ -156,23 +174,40 @@
 
 	function placeCartRecommendations() {
 		var wrapper = document.querySelector('.crw-recommendations__cart-footer-fallback');
-		var form = document.querySelector('.woocommerce-cart-form');
-		var coupon;
 		var target;
+		var insertBefore;
+		var selectors = [
+			'.wp-block-woocommerce-cart-order-summary-block',
+			'.wc-block-cart__sidebar',
+			'.cart-collaterals .cart_totals',
+			'.cart_totals'
+		];
+		var index;
 
-		if (!wrapper || !form || form.contains(wrapper)) {
+		if (!wrapper) {
 			return;
 		}
 
-		coupon = form.querySelector('.coupon, [name="coupon_code"]');
-		target = coupon ? coupon.closest('.coupon') || coupon : null;
+		for (index = 0; index < selectors.length; index++) {
+			target = document.querySelector(selectors[index]);
 
-		if (target && target.parentNode) {
-			target.parentNode.insertBefore(wrapper, target);
+			if (target) {
+				break;
+			}
+		}
+
+		if (!target || target.contains(wrapper)) {
 			return;
 		}
 
-		form.appendChild(wrapper);
+		insertBefore = target.querySelector('.wc-proceed-to-checkout, .wp-block-woocommerce-proceed-to-checkout-block');
+
+		if (insertBefore && insertBefore.parentNode === target) {
+			target.insertBefore(wrapper, insertBefore);
+			return;
+		}
+
+		target.appendChild(wrapper);
 	}
 
 	function debounce(callback, delay) {
